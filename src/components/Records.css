@@ -1,0 +1,798 @@
+/* Records Component Styles */
+
+.records-container {
+  padding: 20px;
+}
+
+/* Monthly Calendar Grid */
+.monthly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+/* Day Card Styles */
+.day-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e0e0e0;
+  transition: background 0.3s ease;
+}
+
+.day-card.clickable::before {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.day-card.clickable {
+  cursor: pointer;
+}
+
+.day-card.clickable:hover {
+  border-color: #0056b3;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.2);
+}
+
+.day-card.clickable:hover::before {
+  background: linear-gradient(90deg, #0056b3, #004085);
+}
+
+.day-card.clickable:active {
+  transform: translateY(0);
+}
+
+.day-card .card-body {
+  padding: 12px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.day-card .card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.day-card .day-name {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-card .stock-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.day-card .stock-item {
+  flex: 1;
+  text-align: center;
+}
+
+.day-card .stock-label {
+  font-size: 0.7rem;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.day-card .stock-value {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.day-card .orders-badge {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-top: 8px;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+.day-card .text-success {
+  color: #28a745 !important;
+}
+
+.day-card .text-muted {
+  color: #6c757d !important;
+}
+
+/* Pulse animation for orders badge */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Empty state styling */
+.day-card .text-muted.small {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.day-card .text-success.small {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Monthly Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card .card-title {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card .card-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Daily View Styles */
+.daily-view-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.daily-view-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  transform: translateX(-2px);
+}
+
+.daily-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.daily-stat-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.daily-stat-card .stat-title {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.daily-stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .monthly-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  
+  .day-card .card-body {
+    padding: 8px;
+  }
+  
+  .day-card .card-title {
+    font-size: 1rem;
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  
+  .daily-stats {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .monthly-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .daily-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading and Empty States */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+/* Export Button */
+.export-btn {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  color: white;
+}
+
+/* Month/Year Selectors */
+.month-year-selectors {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selector-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selector-group label {
+  font-weight: 500;
+  color: #555;
+  margin: 0;
+}
+
+.form-select {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Table Styles */
+.records-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.records-table .table {
+  margin: 0;
+}
+
+.records-table .table th {
+  background: #f8f9fa;
+  border: none;
+  padding: 15px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.records-table .table td {
+  padding: 15px;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: top;
+}
+
+.records-table .table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* Item Lists in Table */
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item-list li:last-child {
+  border-bottom: none;
+}
+
+.item-list .sub-list {
+  list-style: none;
+  padding-left: 15px;
+  margin-top: 5px;
+}
+
+.item-list .sub-list li {
+  font-size: 0.85rem;
+  color: #666;
+  padding: 2px 0;
+  border-bottom: none;
+}
+
+/* Mobile Records Styles - Only applies to mobile devices */
+@media (max-width: 768px) {
+  /* Header Section Mobile Optimization */
+  .records-header {
+    flex-direction: column !important;
+    gap: 15px;
+    align-items: stretch !important;
+  }
+
+  .records-header h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .records-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .records-controls .form-control {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .records-controls .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  /* Date Selection Mobile Enhancement */
+  .date-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .date-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .date-input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    font-size: 16px; /* Prevents zoom on iOS */
+    transition: all 0.2s ease;
+  }
+
+  .date-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+  }
+
+  /* Generate Report Button Mobile Enhancement */
+  .generate-report-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+  }
+
+  .generate-report-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  }
+
+  /* Summary Cards Mobile Enhancement */
+  .summary-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .summary-card {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    text-align: center;
+  }
+
+  .summary-card.primary {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-left: 4px solid #2196f3;
+  }
+
+  .summary-card.success {
+    background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+    border-left: 4px solid #4caf50;
+  }
+
+  .summary-card.warning {
+    background: linear-gradient(135deg, #fff3e0, #ffcc02);
+    border-left: 4px solid #ff9800;
+  }
+
+  .summary-card.danger {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border-left: 4px solid #f44336;
+  }
+
+  .summary-card.info {
+    background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+    border-left: 4px solid #009688;
+  }
+
+  .summary-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  .summary-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Detailed Records Table Mobile Optimization */
+  .records-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: white;
+    margin-bottom: 20px;
+  }
+
+  .records-table {
+    min-width: 600px; /* Ensures horizontal scroll on mobile */
+    font-size: 12px;
+  }
+
+  .records-table th {
+    padding: 12px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .records-table td {
+    padding: 10px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* Table Row Mobile Enhancement */
+  .table-row {
+    transition: all 0.2s ease;
+  }
+
+  .table-row:hover {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    transform: scale(1.01);
+  }
+
+  /* Item Details Mobile Enhancement */
+  .item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+  }
+
+  .item-name {
+    font-weight: 600;
+    color: #333;
+    word-break: break-word;
+    line-height: 1.3;
+  }
+
+  .item-category {
+    font-size: 11px;
+    color: #6c757d;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  /* Quantity and Price Mobile Enhancement */
+  .quantity-cell,
+  .price-cell {
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    padding: 8px 4px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    min-width: 60px;
+  }
+
+  .quantity-cell {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1565c0;
+  }
+
+  .price-cell {
+    background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+    color: #7b1fa2;
+  }
+
+  /* Total Amount Mobile Enhancement */
+  .total-amount {
+    background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+    color: #2e7d32;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 4px;
+    min-width: 80px;
+  }
+
+  /* Empty State Mobile Enhancement */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    margin: 20px 0;
+  }
+
+  .empty-state h3 {
+    color: #6c757d;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    color: #868e96;
+    margin: 0;
+  }
+
+  /* Loading State Mobile Enhancement */
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+
+  .loading-state::after {
+    content: '';
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Mobile-specific enhancements */
+  .mobile-optimized {
+    touch-action: manipulation;
+    /* Add bottom padding for mobile navigation */
+    padding-bottom: 100px;
+  }
+
+  /* Enhanced focus states for accessibility */
+  .form-control:focus,
+  .btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
+
+  /* Mobile-specific spacing */
+  .mobile-spacing {
+    margin-bottom: 20px;
+  }
+
+  /* Mobile card enhancements */
+  .mobile-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+  }
+
+  .mobile-card .card-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+  }
+
+  .mobile-card .card-body {
+    padding: 20px;
+  }
+
+  /* Responsive grid adjustments */
+  .row {
+    margin: 0;
+  }
+
+  .col-md-6,
+  .col-md-4,
+  .col-md-3 {
+    width: 100% !important;
+    padding: 0;
+    margin-bottom: 15px;
+  }
+}
+
+/* Tablet-specific optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .records-table {
+    font-size: 13px;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 12px 8px;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Large mobile devices */
+@media (min-width: 481px) and (max-width: 768px) {
+  .records-table {
+    font-size: 13px;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .records-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .summary-card h3 {
+    font-size: 1.5rem;
+  }
+
+  .summary-card p {
+    font-size: 12px;
+  }
+
+  .records-table {
+    font-size: 11px;
+  }
+
+  .item-details {
+    min-width: 100px;
+  }
+}

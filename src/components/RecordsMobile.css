@@ -1,0 +1,393 @@
+/* ===== RECORDS MOBILE CSS - SEPARATE FILE ===== */
+/* This file ONLY affects mobile devices */
+
+@media (max-width: 768px) {
+  
+  /* ===== RECORDS MOBILE OPTIMIZATION ===== */
+  .records-container {
+    padding: 16px !important;
+    margin: 0 !important;
+  }
+
+  .records-header {
+    text-align: center !important;
+    margin-bottom: 20px !important;
+    padding: 20px 16px !important;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+    border-radius: 12px !important;
+  }
+
+  .records-header h2 {
+    font-size: 1.6rem !important;
+    margin-bottom: 10px !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+  }
+
+  .records-header p {
+    font-size: 14px !important;
+    color: #666 !important;
+    margin: 0 !important;
+  }
+
+  /* ===== RECORDS TABS MOBILE ===== */
+  .records-tabs {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .records-tab {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    border: 2px solid transparent !important;
+    background: white !important;
+    color: #333 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .records-tab.active {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white !important;
+    border-color: #0056b3 !important;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3) !important;
+  }
+
+  /* ===== RECORDS TABLES MOBILE SCROLLING ===== */
+  .records-table-container {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #007bff #f0f0f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    background: white !important;
+  }
+
+  .records-table {
+    min-width: 600px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-collapse: collapse !important;
+  }
+
+  .records-table th {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white !important;
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    white-space: nowrap !important;
+    min-width: 100px !important;
+  }
+
+  .records-table td {
+    padding: 10px 8px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    border-bottom: 1px solid #e9ecef !important;
+    white-space: nowrap !important;
+    min-width: 100px !important;
+  }
+
+  .records-table tr:hover {
+    background: #f8f9fa !important;
+  }
+
+  /* ===== RECORDS INPUT FIELDS MOBILE ===== */
+  .records-table input[type="text"],
+  .records-table input[type="number"],
+  .records-table input[type="date"] {
+    width: 100% !important;
+    min-width: 80px !important;
+    padding: 8px 6px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .records-table input:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
+    outline: none !important;
+  }
+
+  /* ===== RECORDS BUTTONS MOBILE ===== */
+  .records-table .btn {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    margin: 2px !important;
+    white-space: nowrap !important;
+    min-width: 60px !important;
+    min-height: 36px !important;
+    border-radius: 6px !important;
+    touch-action: manipulation !important;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
+  }
+
+  /* ===== RECORDS CONTROLS MOBILE ===== */
+  .records-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+    padding: 16px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .records-controls .form-control {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    border: 2px solid #e9ecef !important;
+    font-size: 16px !important;
+    background: white !important;
+  }
+
+  .records-controls .btn {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    min-height: 48px !important;
+  }
+
+  /* ===== RECORDS CARDS MOBILE ===== */
+  .records-card {
+    margin-bottom: 20px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    overflow: hidden !important;
+    background: white !important;
+  }
+
+  .records-card .card-header {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white !important;
+    border: none !important;
+    padding: 16px 20px !important;
+    text-align: center !important;
+  }
+
+  .records-card .card-header h5 {
+    font-size: 1.3rem !important;
+    margin: 0 !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .records-card .card-body {
+    padding: 20px !important;
+  }
+
+  /* ===== RECORDS SUMMARY MOBILE ===== */
+  .records-summary {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .records-summary-item {
+    background: white !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    text-align: center !important;
+  }
+
+  .records-summary-value {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    color: #007bff !important;
+    margin-bottom: 8px !important;
+  }
+
+  .records-summary-label {
+    font-size: 14px !important;
+    color: #666 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* ===== CUSTOM SCROLLBAR STYLING ===== */
+  .records-table-container::-webkit-scrollbar {
+    height: 8px !important;
+  }
+
+  .records-table-container::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 4px !important;
+  }
+
+  .records-table-container::-webkit-scrollbar-thumb {
+    background: #007bff !important;
+    border-radius: 4px !important;
+    border: 1px solid #f0f0f0 !important;
+  }
+
+  .records-table-container::-webkit-scrollbar-thumb:hover {
+    background: #0056b3 !important;
+  }
+
+  /* ===== MOBILE-SPECIFIC ENHANCEMENTS ===== */
+  .mobile-optimized {
+    touch-action: manipulation !important;
+    padding-bottom: 100px !important;
+  }
+
+  /* Enhanced focus states */
+  .records-table input:focus,
+  .records-controls .form-control:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
+    outline: none !important;
+  }
+
+  /* Mobile-specific spacing */
+  .mobile-spacing {
+    margin-bottom: 16px !important;
+  }
+
+  /* Mobile card enhancements */
+  .mobile-card {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    overflow: hidden !important;
+  }
+}
+
+/* ===== TABLET OPTIMIZATIONS ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .records-table {
+    min-width: 700px !important;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 14px 10px !important;
+    font-size: 15px !important;
+  }
+
+  .records-summary {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* ===== LARGE MOBILE DEVICES ===== */
+@media (min-width: 481px) and (max-width: 768px) {
+  .records-table {
+    min-width: 650px !important;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ===== SMALL MOBILE DEVICES ===== */
+@media (max-width: 480px) {
+  .records-table {
+    min-width: 600px !important;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+  }
+
+  .records-header h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .records-summary {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===== DESKTOP PROTECTION ===== */
+/* This ensures desktop view is NEVER affected */
+@media (min-width: 769px) {
+  .records-table-container {
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+
+  .records-table {
+    min-width: auto !important;
+    width: 100% !important;
+  }
+
+  .records-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 16px !important;
+  }
+
+  .records-tab {
+    width: auto !important;
+  }
+
+  .records-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 16px !important;
+  }
+
+  .records-controls .form-control,
+  .records-controls .btn {
+    width: auto !important;
+  }
+
+  .records-summary {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px !important;
+  }
+
+  .records-summary-item {
+    flex: 1 !important;
+  }
+}

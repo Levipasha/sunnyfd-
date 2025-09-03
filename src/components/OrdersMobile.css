@@ -1,0 +1,175 @@
+/* ===== ORDERS MOBILE CSS - ONLY CATEGORY NAVIGATION ===== */
+/* This file ONLY affects mobile devices and ONLY changes category layout */
+
+/* Mobile-only styles - Only applies to mobile devices */
+@media (max-width: 768px) {
+  
+  /* ===== HIDE SAVE AND PRINT BUTTONS ON MOBILE ===== */
+  /* Mobile is for editing/adding only - no save/print functionality */
+  .save-btn,
+  .print-btn,
+  .save-button,
+  .print-button,
+  .SaveButton,
+  .PrintButton {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* ===== CATEGORY NAVIGATION MOBILE FORCE ===== */
+  /* CRITICAL: Override the d-flex justify-content-center with grid layout */
+  
+  .category-navigation {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 20px 16px !important;
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    margin-bottom: 25px !important;
+    justify-content: center !important;
+    align-items: start !important;
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* CRITICAL: Force all category buttons to be equal width and full height */
+  .category-navigation .btn,
+  .category-navigation .category-btn,
+  .category-navigation button,
+  .category-navigation .btn-primary,
+  .category-navigation .btn-success,
+  .category-navigation .btn-outline-secondary {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    padding: 16px 12px !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    border: 2px solid transparent !important;
+    font-weight: 600 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    float: none !important;
+    display: block !important;
+    flex: none !important;
+    align-self: stretch !important;
+    flex-basis: auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* CRITICAL: Remove mx-2 margin that's causing spacing issues */
+  .category-navigation .mx-2,
+  .category-navigation .btn.mx-2,
+  .category-navigation .category-btn.mx-2 {
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* CRITICAL: Override Bootstrap classes ONLY for category navigation */
+  .category-navigation.d-flex {
+    display: grid !important;
+  }
+
+  .category-navigation.justify-content-center {
+    justify-content: center !important;
+  }
+}
+
+/* ===== TABLET OPTIMIZATIONS ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .category-navigation {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+
+  .category-navigation .btn,
+  .category-navigation .category-btn,
+  .category-navigation button {
+    padding: 18px 14px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* ===== LARGE MOBILE DEVICES ===== */
+@media (min-width: 481px) and (max-width: 768px) {
+  .category-navigation {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .category-navigation .btn,
+  .category-navigation .category-btn,
+  .category-navigation button {
+    padding: 17px 13px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ===== SMALL MOBILE DEVICES ===== */
+@media (max-width: 480px) {
+  .category-navigation {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .category-navigation .btn,
+  .category-navigation .category-btn,
+  .category-navigation button {
+    padding: 14px 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ===== DESKTOP PROTECTION ===== */
+/* This ensures desktop view is NEVER affected */
+@media (min-width: 769px) {
+  .category-navigation {
+    display: flex !important;
+    grid-template-columns: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  .category-navigation .btn,
+  .category-navigation .category-btn,
+  .category-navigation button {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 8px !important;
+    flex: none !important;
+  }
+
+  /* Show Save/Print buttons on desktop */
+  .save-btn,
+  .print-btn,
+  .save-button,
+  .print-button,
+  .SaveButton,
+  .PrintButton {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Reset category navigation to normal on desktop */
+  .category-navigation.d-flex {
+    display: flex !important;
+  }
+
+  .category-navigation.justify-content-center {
+    justify-content: center !important;
+  }
+
+  .category-navigation .mx-2 {
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
+  }
+}

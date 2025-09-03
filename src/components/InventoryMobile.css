@@ -1,0 +1,347 @@
+/* ===== INVENTORY MOBILE CSS - SEPARATE FILE ===== */
+/* This file ONLY affects mobile devices */
+
+@media (max-width: 768px) {
+  
+  /* ===== INVENTORY MOBILE OPTIMIZATION ===== */
+  .inventory-container {
+    padding: 16px !important;
+    margin: 0 !important;
+  }
+
+  .inventory-header {
+    text-align: center !important;
+    margin-bottom: 20px !important;
+    padding: 20px 16px !important;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+    border-radius: 12px !important;
+  }
+
+  .inventory-header h2 {
+    font-size: 1.6rem !important;
+    margin-bottom: 10px !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+  }
+
+  .inventory-header p {
+    font-size: 14px !important;
+    color: #666 !important;
+    margin: 0 !important;
+  }
+
+  /* ===== INVENTORY TABLE MOBILE SCROLLING ===== */
+  .inventory-table-container {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #007bff #f0f0f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    background: white !important;
+  }
+
+  .inventory-table {
+    min-width: 600px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-collapse: collapse !important;
+  }
+
+  .inventory-table th {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white !important;
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    white-space: nowrap !important;
+    min-width: 100px !important;
+  }
+
+  .inventory-table td {
+    padding: 10px 8px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    border-bottom: 1px solid #e9ecef !important;
+    white-space: nowrap !important;
+    min-width: 100px !important;
+  }
+
+  .inventory-table tr:hover {
+    background: #f8f9fa !important;
+  }
+
+  /* ===== INVENTORY INPUT FIELDS MOBILE ===== */
+  .inventory-table input[type="text"],
+  .inventory-table input[type="number"] {
+    width: 100% !important;
+    min-width: 80px !important;
+    padding: 8px 6px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .inventory-table input:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
+    outline: none !important;
+  }
+
+  /* ===== INVENTORY BUTTONS MOBILE ===== */
+  .inventory-table .btn {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    margin: 2px !important;
+    white-space: nowrap !important;
+    min-width: 60px !important;
+    min-height: 36px !important;
+    border-radius: 6px !important;
+    touch-action: manipulation !important;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
+  }
+
+  /* ===== INVENTORY CONTROLS MOBILE ===== */
+  .inventory-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+    padding: 16px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .inventory-controls .form-control {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    border: 2px solid #e9ecef !important;
+    font-size: 16px !important;
+    background: white !important;
+  }
+
+  .inventory-controls .btn {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    min-height: 48px !important;
+  }
+
+  /* ===== CUSTOM SCROLLBAR STYLING ===== */
+  .inventory-table-container::-webkit-scrollbar {
+    height: 8px !important;
+  }
+
+  .inventory-table-container::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 4px !important;
+  }
+
+  .inventory-table-container::-webkit-scrollbar-thumb {
+    background: #007bff !important;
+    border-radius: 4px !important;
+    border: 1px solid #f0f0f0 !important;
+  }
+
+  .inventory-table-container::-webkit-scrollbar-thumb:hover {
+    background: #0056b3 !important;
+  }
+
+  /* ===== MOBILE-SPECIFIC ENHANCEMENTS ===== */
+  .mobile-optimized {
+    touch-action: manipulation !important;
+    padding-bottom: 100px !important;
+  }
+
+  /* Enhanced focus states */
+  .inventory-table input:focus,
+  .inventory-controls .form-control:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
+    outline: none !important;
+  }
+
+  /* Mobile-specific spacing */
+  .mobile-spacing {
+    margin-bottom: 16px !important;
+  }
+
+  /* Mobile card enhancements */
+  .mobile-card {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    overflow: hidden !important;
+  }
+
+  /* ===== SAVE RECORDS SECTION MOBILE ===== */
+  .save-records-card {
+    margin: 20px 10px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  }
+  
+  .save-records-card .card-body {
+    padding: 20px 15px !important;
+    text-align: center !important;
+  }
+  
+  .save-records-card .card-title {
+    font-size: 1.3rem !important;
+    margin-bottom: 15px !important;
+    color: #28a745 !important;
+  }
+  
+  .save-records-card .card-text {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
+    color: #666 !important;
+  }
+  
+  .save-records-card .btn-success {
+    width: 100% !important;
+    padding: 15px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+  }
+  
+  .save-records-card .btn-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+  }
+  
+  .save-records-card .btn-success:disabled {
+    background: #6c757d !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ===== HEADER SAVE BUTTON MOBILE ===== */
+  .inventory-header .btn-primary {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    margin-top: 10px !important;
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+  }
+  
+  .inventory-header .btn-primary:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  }
+  
+  .inventory-header .btn-primary:disabled {
+    background: #6c757d !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ===== TABLET OPTIMIZATIONS ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .inventory-table {
+    min-width: 700px !important;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 14px 10px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* ===== LARGE MOBILE DEVICES ===== */
+@media (min-width: 481px) and (max-width: 768px) {
+  .inventory-table {
+    min-width: 650px !important;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ===== SMALL MOBILE DEVICES ===== */
+@media (max-width: 480px) {
+  .inventory-table {
+    min-width: 600px !important;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+  }
+
+  .inventory-header h2 {
+    font-size: 1.4rem !important;
+  }
+}
+
+/* ===== DESKTOP PROTECTION ===== */
+/* This ensures desktop view is NEVER affected */
+@media (min-width: 769px) {
+  .inventory-table-container {
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+
+  .inventory-table {
+    min-width: auto !important;
+    width: 100% !important;
+  }
+
+  .inventory-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 16px !important;
+  }
+
+  .inventory-controls .form-control,
+  .inventory-controls .btn {
+    width: auto !important;
+  }
+}

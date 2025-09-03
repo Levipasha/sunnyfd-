@@ -1,0 +1,73 @@
+/* =========================
+   Mobile Only (≤768px)
+   ========================= */
+@media (max-width: 768px) {
+  /* Hide Print and Save buttons on mobile */
+  .print-btn,
+  .print-btn *,
+  .save-btn,
+  .save-btn *,
+  .print-button,
+  .print-button *,
+  .save-button,
+  .save-button *,
+  .PrintButton,
+  .PrintButton *,
+  .SaveButton,
+  .SaveButton * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* Target SaveButton specifically by its container structure */
+  div[style*="position: absolute"][style*="top: 0"][style*="right: 0"] button,
+  div[style*="position: absolute"][style*="top: 0"][style*="right: 0"] button * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* Target PrintButton by its specific class */
+  .print-btn,
+  .print-btn * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  .recipe-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #007bff #f1f1f1;
+  }
+
+  .recipe-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .recipe-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .recipe-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 10px;
+  }
+
+  .recipe-table {
+    min-width: 800px !important; /* ensures table scrolls instead of shrinking */
+  }
+}
+
+/* =========================
+   Desktop (>768px)
+   (no changes - keep original design)
+   ========================= */
+@media (min-width: 769px) {
+  .recipe-table-wrapper {
+    overflow: visible !important;
+  }
+}

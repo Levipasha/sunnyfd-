@@ -1,0 +1,246 @@
+/* Date Specific Records Component Styles */
+
+.date-records-table {
+  background: white;
+}
+
+.date-records-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  border-bottom: 2px solid #e8e8e8;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.date-records-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 8px 4px;
+}
+
+.date-records-table .ant-table-tbody > tr:hover > td {
+  background: #f5f5f5;
+}
+
+/* Column styling */
+.opening-stock {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.positive-value {
+  color: #52c41a;
+  font-weight: 500;
+}
+
+.negative-value {
+  color: #fa8c16;
+  font-weight: 500;
+}
+
+.total-value {
+  color: #722ed1;
+  font-weight: 600;
+}
+
+.final-stock {
+  color: #13c2c2;
+  font-weight: 600;
+}
+
+.unit-text {
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Summary cards styling */
+.ant-card.ant-card-small {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.ant-card.ant-card-small:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Date selector styling */
+.ant-picker {
+  border-radius: 6px;
+  border: 2px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.ant-picker:hover {
+  border-color: #40a9ff;
+}
+
+.ant-picker-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Search input styling */
+.ant-input {
+  border-radius: 6px;
+  border: 2px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.ant-input:hover {
+  border-color: #40a9ff;
+}
+
+.ant-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 0, 0.2);
+}
+
+/* Button styling */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.ant-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Drawer styling */
+.ant-drawer-header {
+  background: #fafafa;
+  border-bottom: 2px solid #e8e8e8;
+}
+
+.ant-drawer-title {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Loading and empty states */
+.ant-spin {
+  color: #1890ff;
+}
+
+.ant-empty {
+  padding: 40px 0;
+}
+
+.ant-empty-description {
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .date-records-table .ant-table-thead > tr > th,
+  .date-records-table .ant-table-tbody > tr > td {
+    padding: 6px 2px;
+    font-size: 12px;
+  }
+  
+  .ant-card.ant-card-small {
+    margin-bottom: 8px;
+  }
+  
+  .ant-row .ant-col {
+    margin-bottom: 8px;
+  }
+}
+
+/* Table scrollbar styling */
+.date-records-table .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.date-records-table .ant-table-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.date-records-table .ant-table-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.date-records-table .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Pagination styling */
+.ant-pagination {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.ant-pagination-item {
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.ant-pagination-item:hover {
+  border-color: #1890ff;
+}
+
+.ant-pagination-item-active {
+  border-color: #1890ff;
+  background: #1890ff;
+}
+
+/* Card header styling */
+.ant-card-head {
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.ant-card-head-title {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Summary statistics styling */
+.summary-stats .ant-card {
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.summary-stats .ant-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Filter card styling */
+.filters-card .ant-card-body {
+  padding: 16px;
+}
+
+.filters-card .ant-input-group-addon {
+  background: #fafafa;
+  border-color: #d9d9d9;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-active {
+  background: #52c41a;
+}
+
+.status-inactive {
+  background: #fa8c16;
+}
+
+.status-warning {
+  background: #faad14;
+}
