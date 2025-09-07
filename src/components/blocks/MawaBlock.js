@@ -37,8 +37,8 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
         // Initialize orderQuantities with default values for each recipe
         const initialOrderQuantities = {};
         recipes.forEach(recipe => {
-          // Set default order quantity to 1 for each recipe so ingredient values are visible
-          initialOrderQuantities[recipe.id] = 1;
+          // Set default order quantity to 0 so it looks zero by default
+          initialOrderQuantities[recipe.id] = 0;
         });
         setOrderQuantities(initialOrderQuantities);
         
@@ -79,7 +79,7 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
       setOrderQuantities(prev => {
         const newOrderQuantities = {};
         recipes.forEach(recipe => {
-          newOrderQuantities[recipe.id] = prev[recipe.id] || 1;
+          newOrderQuantities[recipe.id] = prev[recipe.id] || 0;
         });
         console.log('🔄 Updated order quantities:', newOrderQuantities);
         return newOrderQuantities;
@@ -107,7 +107,7 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
       Object.entries(recipesBySubCategory).forEach(([subCategory, recipes]) => {
         blockDataWithQuantities[subCategory] = recipes.map(recipe => ({
           ...recipe,
-          orderQty: orderQuantities[recipe.id] || 1
+          orderQty: orderQuantities[recipe.id] || 0
         }));
       });
 
@@ -295,9 +295,9 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
         },
         items: [{
           name: newRow.description || newRow.name,
-          order: parseFloat(newRow.order) || 1,
+          order: parseFloat(newRow.order) || 0,
           per: parseFloat(newRow.per) || 1,
-          totalQty: parseFloat(newRow.order) || 1,
+          totalQty: parseFloat(newRow.order) || 0,
           ingredientValues: newRow.ingredients ? 
             (Array.isArray(newRow.ingredients) ? 
               newRow.ingredients.reduce((acc, ing) => {
@@ -308,8 +308,8 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
             ) : {}
         }],
         totals: {
-          orderTotal: parseFloat(newRow.order) || 1,
-          totalQtyTotal: parseFloat(newRow.order) || 1,
+          orderTotal: parseFloat(newRow.order) || 0,
+          totalQtyTotal: parseFloat(newRow.order) || 0,
           ingredientTotals: newRow.ingredients ? 
             (Array.isArray(newRow.ingredients) ? 
               newRow.ingredients.reduce((acc, ing) => {
