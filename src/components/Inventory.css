@@ -935,13 +935,26 @@
   font-weight: 800;
   letter-spacing: 0.2px;
   color: #1f2937; /* slate-800 */
+  margin-bottom: 2px;
+  line-height: 1.1;
 }
 
 .inventory-header .text-muted {
   font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 13px;
+  font-size: 11.5px;
   color: #6b7280 !important; /* slate-500 */
-  line-height: 1.45;
+  line-height: 1.25;
+  margin-bottom: 2px !important;
+}
+
+/* Make the header block more compact so the sheet appears sooner */
+.inventory-header {
+  margin-bottom: 8px !important;
+}
+.permission-indicator {
+  font-size: 9.5px;
+  margin-top: 2px;
+  margin-bottom: 2px !important;
 }
 
 /* Digital countdown styling */
@@ -949,7 +962,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .digital-timer .screen {
@@ -980,8 +993,8 @@
 }
 
 .flip-digit {
-  width: 22px;
-  height: 28px;
+  width: 18px;
+  height: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -989,7 +1002,7 @@
   color: #fff;
   font-weight: 700;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 4px;
   box-shadow: inset 0 -1px 0 rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.25);
   border: 1px solid rgba(255,255,255,0.1);
