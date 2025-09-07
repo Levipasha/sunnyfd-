@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { createEnterKeyHandler } from '../../utils/keyboardNavigation';
 import AddRecipeButton from '../AddRecipeButton';
 import EditDeleteButton from '../EditDeleteButton';
 import NewRecipeColumn from '../newrecpiecoloum';
@@ -25,6 +26,8 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
   
   // Ref for the block content
   const blockRef = useRef(null);
+
+  const handleEnterKey = useMemo(() => createEnterKeyHandler(() => blockRef.current), []);
 
 
 
@@ -618,11 +621,11 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
                         
                         return (
     <div className="block-container" ref={blockRef}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <h2>Cross Update Block</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+        <h2 style={{ fontSize: '20px', margin: 0 }}>Cross Update Block</h2>
         
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => {
               console.log('🖨️ Print button clicked!');
@@ -630,13 +633,13 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
             }}
             disabled={isPrinting || Object.keys(recipesBySubCategory).length === 0}
             style={{
-              padding: '8px 16px',
+              padding: '6px 12px',
               backgroundColor: isPrinting ? '#6c757d' : '#28a745',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               cursor: isPrinting ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
+              fontSize: '12px',
               display: 'flex',
               alignItems: 'center',
               gap: '5px'
@@ -652,13 +655,13 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
           <button
             onClick={refreshRecipes}
             style={{
-              padding: '8px 16px',
+              padding: '6px 12px',
               backgroundColor: '#007bff',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: '12px',
               display: 'flex',
               alignItems: 'center',
               gap: '5px'
@@ -672,11 +675,11 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
       </div>
       
             {/* Add Recipe Button and Save Button - Fixed position */}
-      <div style={{ position: 'relative', marginBottom: '20px', minHeight: '60px' }}>
+      <div style={{ position: 'relative', marginBottom: '10px', minHeight: '40px' }}>
         {isAuthenticated && (
           <AddRecipeButton inventory={inventory} onSaveRecipe={handleAddRecipe} />
         )}
-        <div style={{ position: 'absolute', top: '0', right: '0', minHeight: '40px', minWidth: '120px', zIndex: 1 }}>
+        <div style={{ position: 'absolute', top: '0', right: '0', minHeight: '32px', minWidth: '120px', zIndex: 1 }}>
           <SaveButton 
             recipes={orderedRecipes}
             orderQuantities={orderQuantities}
@@ -694,39 +697,41 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
       {Object.keys(recipesBySubCategory).length > 0 &&
         Object.entries(recipesBySubCategory).map(([subCategory, recipes]) => (
           <div key={subCategory} className="sub-category-section">
-            <h3>{subCategory}</h3>
+            <h3 style={{ fontSize: '16px', margin: '6px 0' }}>{subCategory}</h3>
             <div className="table-container">
-                  <table className="recipe-table">
+                  <table className="recipe-table" style={{ fontSize: '12px' }}>
                     <thead>
                   <tr>
-                    <th>Item</th>
-                    <th>Order</th>
-                    <th>Per</th>
-                    <th>Total Qty</th>
+                    <th style={{ padding: '6px 8px' }}>Item</th>
+                    <th style={{ padding: '6px 8px' }}>Order</th>
+                    <th style={{ padding: '6px 8px' }}>Per</th>
+                    <th style={{ padding: '6px 8px' }}>Total Qty</th>
                     {recipes.length > 0 && (() => {
                       const ingredientColumns = getAllIngredientsFromRecipes(recipes);
                       return ingredientColumns.map(ingredient => (
-                        <th key={ingredient}>{ingredient}</th>
+                        <th key={ingredient} style={{ padding: '6px 8px' }}>{ingredient}</th>
                       ));
                     })()}
-                    <th>Actions</th>
+                    <th style={{ padding: '6px 8px' }}>Actions</th>
                  </tr>
                </thead>
                <tbody>
                   {recipes.map((recipe, index) => (
                     <tr key={recipe.id}>
-                      <td>{recipe.description}</td>
-                      <td>
+                      <td style={{ padding: '6px 8px' }}>{recipe.description}</td>
+                      <td style={{ padding: '6px 8px' }}>
                      <input 
                        type="number" 
-                          value={orderQuantities[recipe.id] || ''}
+                          value={orderQuantities[recipe.id] ?? 0}
                           onChange={(e) => handleOrderQuantityChange(recipe.id, e.target.value)}
+                          onKeyDown={handleEnterKey}
+                          className="order-qty-input"
                                 placeholder="0"
-                          style={{ width: '60px' }}
+                          style={{ width: '48px', fontSize: '12px', padding: '2px 4px' }}
                      />
                    </td>
-                      <td>1</td>
-                      <td>{orderQuantities[recipe.id] || 0}</td>
+                      <td style={{ padding: '6px 8px' }}>1</td>
+                      <td style={{ padding: '6px 8px' }}>{orderQuantities[recipe.id] || 0}</td>
                       {(() => {
                         const ingredientColumns = getAllIngredientsFromRecipes(recipes);
                         
@@ -735,7 +740,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
                           if (!recipeContainsIngredient(recipe, ingredient)) {
                             // Show empty cell for ingredients not in this recipe
                             return (
-                              <td key={ingredient} style={{ background: '#f8f9fa' }}>
+                              <td key={ingredient} style={{ background: '#f8f9fa', padding: '6px 8px' }}>
                                 {/* Empty cell for ingredients not in this recipe */}
                               </td>
                             );
@@ -747,13 +752,13 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
                           const totalQty = parseFloat(baseQty) * orderQty;
                           
                           return (
-                            <td key={ingredient}>
+                            <td key={ingredient} style={{ padding: '6px 8px' }}>
                               {formatCalculatedValue(totalQty, 2)}
                           </td>
                         );
                         });
                       })()}
-                      <td>
+                      <td style={{ padding: '6px 8px' }}>
                             {isAuthenticated && (
                               <EditDeleteButton
                                 recipe={recipe}
@@ -767,23 +772,23 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
                   ))}
                   {/* Totals Row */}
                   <tr className="totals-row">
-                    <td><strong>TOTALS</strong></td>
-                    <td><strong>{Object.values(orderQuantities).reduce((sum, val) => sum + (parseFloat(val) || 0), 0).toFixed(2)}</strong></td>
-                    <td>-</td>
-                    <td><strong>{Object.values(orderQuantities).reduce((sum, val) => sum + (parseFloat(val) || 0), 0).toFixed(2)}</strong></td>
+                    <td style={{ padding: '6px 8px' }}><strong>TOTALS</strong></td>
+                    <td style={{ padding: '6px 8px' }}><strong>{Object.values(orderQuantities).reduce((sum, val) => sum + (parseFloat(val) || 0), 0).toFixed(2)}</strong></td>
+                    <td style={{ padding: '6px 8px' }}>-</td>
+                    <td style={{ padding: '6px 8px' }}><strong>{Object.values(orderQuantities).reduce((sum, val) => sum + (parseFloat(val) || 0), 0).toFixed(2)}</strong></td>
                     {recipes.length > 0 && (() => {
                       const ingredientColumns = getAllIngredientsFromRecipes(recipes);
                       
                       return ingredientColumns.map(ingredient => {
                         const total = calculateSubCategoryTotals(recipes)[ingredient] || 0;
                         return (
-                          <td key={ingredient}>
+                          <td key={ingredient} style={{ padding: '6px 8px' }}>
                             <strong>{formatCalculatedValue(total, 2)}</strong>
                    </td>
                         );
                       });
                     })()}
-                    <td></td>
+                    <td style={{ padding: '6px 8px' }}></td>
                  </tr>
                </tbody>
              </table>
