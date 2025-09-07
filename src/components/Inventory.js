@@ -916,7 +916,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       {/* Debug Information */}
 
       
-      <div className="d-flex justify-content-between align-items-center mb-3 inventory-header">
+      <div className="d-flex justify-content-between align-items-center mb-1 inventory-header">
         <div>
           <h2>Inventory Management</h2>
           <p className="text-muted mb-0">
@@ -927,11 +927,9 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
               "🔓 Logged In: Can edit Opening Stock, Received, and Consumed" : 
               "🔒 Logged Out: Can only edit Received fields"
             }
-            <br />
+          </p>
 
-                        </p>
-
-            <p className="text-muted mb-0" style={{fontSize: '12px'}}>
+            <p className="text-muted mb-0" style={{fontSize: '11px'}}>
             💾 Records are automatically saved at 12 AM daily (end of each cycle)
           </p>
           <div className="digital-timer">
@@ -946,11 +944,11 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
               ))}
             </span>
           </div>
-          <p className="text-muted mb-0" style={{fontSize: '12px'}}>
+          <p className="text-muted mb-0" style={{fontSize: '11px'}}>
             ✅ Auto Prepare Next: Active • {lastAutoSaveTime ? `Last auto-save: ${new Date(lastAutoSaveTime).toLocaleTimeString()}` : 'No auto-save yet this session'}
           </p>
           {lastManualSaveTime && (
-            <p className="text-muted mb-0" style={{fontSize: '12px'}}>
+            <p className="text-muted mb-0" style={{fontSize: '11px'}}>
               💾 Last manual save: {new Date(lastManualSaveTime).toLocaleTimeString()}
             </p>
           )}
