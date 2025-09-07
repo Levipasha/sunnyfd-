@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { createEnterKeyHandler } from '../../utils/keyboardNavigation';
 import AddRecipeButton from '../AddRecipeButton';
 import EditDeleteButton from '../EditDeleteButton';
 import NewRecipeColumn from '../newrecpiecoloum';
@@ -25,6 +26,7 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
   
   // Ref for the block content
   const blockRef = useRef(null);
+  const handleEnterKey = useMemo(() => createEnterKeyHandler(() => blockRef.current), []);
 
   // Load recipes from MongoDB on component mount
   useEffect(() => {
@@ -568,6 +570,8 @@ const MawaBlock = ({ inventory, setInventory, isAuthenticated, contentRef }) => 
                                 type="number"
                           value={orderQuantities[recipe.id] || ''}
                           onChange={(e) => handleOrderQuantityChange(recipe.id, e.target.value)}
+                                onKeyDown={handleEnterKey}
+                                className="order-qty-input"
                                 placeholder="0"
                           style={{ width: '60px' }}
                               />
