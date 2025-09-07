@@ -4,7 +4,7 @@
  */
 
 // API base URL - adjust this based on your backend server configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-b.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-bd.onrender.com';
 
 /**
  * Get all inventory items

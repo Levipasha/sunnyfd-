@@ -23,7 +23,7 @@ const RecipeList = () => {
   // Fetch recipes from the API
   const fetchRecipes = async () => {
     try {
-      const response = await fetch('https://sunny-b.onrender.com/recipes');
+      const response = await fetch('https://sunny-bd.onrender.com/recipes');
       const data = await response.json();
       
       if (data.success) {
@@ -147,7 +147,7 @@ const RecipeList = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://sunny-b.onrender.com/recipes/${id}`, {
+      const response = await fetch(`https://sunny-bd.onrender.com/recipes/${id}`, {
         method: 'DELETE',
       });
       const data = await response.json();
@@ -245,8 +245,8 @@ const RecipeList = () => {
       console.log('Sending recipe data:', JSON.stringify(recipeData, null, 2));
 
       const url = editingRecipe 
-        ? `https://sunny-b.onrender.com/recipes/${editingRecipe._id}`
-        : 'https://sunny-b.onrender.com/recipes';
+        ? `https://sunny-bd.onrender.com/recipes/${editingRecipe._id}`
+        : 'https://sunny-bd.onrender.com/recipes';
       
       const method = editingRecipe ? 'PUT' : 'POST';
       

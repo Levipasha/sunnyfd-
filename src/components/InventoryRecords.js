@@ -70,8 +70,8 @@ const InventoryRecords = ({ isAuthenticated }) => {
         const now = new Date();
         const currentHour = now.getHours();
         
-        // Auto-save every hour between 6 AM and 6 PM
-        if (currentHour >= 6 && currentHour < 18) {
+        // Auto-save every hour throughout the day (12 AM to 12 AM cycle)
+        if (currentHour >= 0 && currentHour < 24) {
           handleAutoSave();
         }
       }, 3600000); // Check every hour
@@ -358,7 +358,7 @@ const InventoryRecords = ({ isAuthenticated }) => {
           border: isFutureDate ? '1px dashed #d9d9d9' : 'none',
           cursor: isEditable && !isFutureDate ? 'pointer' : 'default'
         }}
-        title={isFutureDate ? 'Future date - data will be available from 6 AM' : isSaved ? 'Saved data - cannot be modified' : 'Editable data'}
+        title={isFutureDate ? 'Future date - data will be available from 12 AM' : isSaved ? 'Saved data - cannot be modified' : 'Editable data'}
       >
         {value || 0}
       </span>
@@ -427,14 +427,7 @@ const InventoryRecords = ({ isAuthenticated }) => {
           align: 'center',
           render: (value, record) => renderDataCell(value, record, date, 'negative-value')
         },
-        {
-          title: 'Total',
-          dataIndex: [date, 'total'],
-          key: `${date}-total`,
-          width: 60,
-          align: 'center',
-          render: (value, record) => renderDataCell(value, record, date, 'total-value')
-        }
+        // First Total column hidden intentionally
       ]
     }));
 
@@ -597,7 +590,7 @@ const InventoryRecords = ({ isAuthenticated }) => {
       {/* Header */}
       <div className="page-header">
         <h1>Inventory Records</h1>
-        <p>Automatic inventory tracking system - Data syncs with inventory items and saves automatically (6 AM - 6 PM daily cycle)</p>
+        <p>Automatic inventory tracking system - Data syncs with inventory items and saves automatically (12 AM - 12 AM daily cycle)</p>
       </div>
 
 

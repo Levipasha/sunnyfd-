@@ -150,18 +150,7 @@ const DateSpecificRecords = ({
       fixed: 'left',
       render: (text) => <strong>{text}</strong>
     },
-    {
-      title: 'Opening Stock',
-      dataIndex: 'openingStock',
-      key: 'openingStock',
-      width: 120,
-      align: 'right',
-      render: (value) => (
-        <span className="opening-stock">
-          {parseFloat(value || 0).toFixed(2)}
-        </span>
-      )
-    },
+    // Opening Stock column hidden intentionally
     {
       title: 'Received',
       children: [
@@ -220,18 +209,7 @@ const DateSpecificRecords = ({
         }
       ]
     },
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-      width: 120,
-      align: 'right',
-      render: (value) => (
-        <span className="total-value">
-          {parseFloat(value || 0).toFixed(2)}
-        </span>
-      )
-    },
+    // First Total column hidden intentionally
     {
       title: 'Final Stock',
       dataIndex: 'total2',

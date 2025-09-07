@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-b.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-bd.onrender.com';
 
 class InventoryRecordService {
   // Get all records with optional filtering
@@ -6,6 +6,9 @@ class InventoryRecordService {
     try {
       const queryParams = new URLSearchParams();
       
+      // Support both legacy and new day/month views
+      if (params.view) queryParams.append('view', params.view);
+      if (params.date) queryParams.append('date', params.date);
       if (params.startDate) queryParams.append('startDate', params.startDate);
       if (params.endDate) queryParams.append('endDate', params.endDate);
       if (params.itemName) queryParams.append('itemName', params.itemName);

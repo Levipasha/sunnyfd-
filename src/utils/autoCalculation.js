@@ -34,7 +34,7 @@ export const loadCustomRecipes = async (category) => {
     console.log(`🔄 loadCustomRecipes called with category: ${category}`);
     
     // First try to load from MongoDB
-    const url = `https://sunny-b.onrender.com/recipes?category=${encodeURIComponent(category)}`;
+    const url = `https://sunny-bd.onrender.com/recipes?category=${encodeURIComponent(category)}`;
     console.log(`🔄 Fetching from URL: ${url}`);
     
     const response = await fetch(url);
@@ -219,8 +219,8 @@ export const saveCustomRecipes = async (category, recipes, skipMongoSave = false
           const isUpdate = recipe.mongoId;
           const method = isUpdate ? 'PUT' : 'POST';
           const url = isUpdate 
-            ? `https://sunny-b.onrender.com/recipes/${recipe.mongoId}`
-            : 'https://sunny-b.onrender.com/recipes';
+            ? `https://sunny-bd.onrender.com/recipes/${recipe.mongoId}`
+            : 'https://sunny-bd.onrender.com/recipes';
           
           console.log(`🔍 Debug: Saving recipe "${recipe.description}" - Method: ${method}, URL: ${url}, Is Update: ${isUpdate}`);
           
@@ -425,7 +425,7 @@ export const clearAllRecipes = async (category) => {
     
     // Clear from MongoDB
     try {
-      const response = await fetch(`https://sunny-b.onrender.com/recipes/category/${encodeURIComponent(category)}`, {
+      const response = await fetch(`https://sunny-bd.onrender.com/recipes/category/${encodeURIComponent(category)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -4,7 +4,6 @@ import Navbar from './components/Navbar';
 import Inventory from './components/Inventory';
 import Orders from './components/Orders';
 
-import RecipeList from './components/RecipeList';
 import InventoryRecords from './components/InventoryRecords';
 import InventoryRecordsHome from './components/InventoryRecordsHome';
 import DayRecordsPage from './components/DayRecordsPage';
@@ -58,7 +57,6 @@ function AppContent({ inventory, setInventory, isAuthenticated, onLogout }) {
         <Routes>
           <Route path="/" element={<Inventory inventory={inventory} setInventory={setInventory} isAuthenticated={isAuthenticated} />} />
           <Route path="/orders" element={<Orders inventory={inventory} setInventory={setInventory} isAuthenticated={isAuthenticated} />} />
-          <Route path="/recipes" element={<RecipeList />} />
           <Route path="/inventory-records" element={<InventoryRecordsHome />} />
           <Route path="/inventory-records/day" element={<DayRecordsPage />} />
           <Route path="/inventory-records/month" element={<MonthRecordsPage />} />

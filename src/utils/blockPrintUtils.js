@@ -19,12 +19,13 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
       <head>
         <title>${blockName} - Recipe Block</title>
         <style>
+          html, body { -webkit-print-color-adjust: exact; }
           body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            font-size: 12px;
-            line-height: 1.4;
+            padding: 8px;
+            font-size: 10px;
+            line-height: 1.25;
           }
           
           .print-header {
@@ -37,7 +38,7 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
           .print-header h1 {
             margin: 0;
             color: #333;
-            font-size: 28px;
+            font-size: 20px;
             font-weight: bold;
           }
           
@@ -62,9 +63,9 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
           .subcategory-title {
             background: #007bff;
             color: white;
-            padding: 12px 15px;
+            padding: 8px 10px;
             margin: 0 0 15px 0;
-            font-size: 16px;
+            font-size: 12px;
             font-weight: bold;
             border-radius: 5px 5px 0 0;
           }
@@ -72,24 +73,29 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
           .recipe-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 11px;
+            margin-bottom: 12px;
+            font-size: 9px;
+            table-layout: fixed;
           }
           
           .recipe-table th {
             background: #f8f9fa;
             border: 1px solid #ddd;
-            padding: 8px 6px;
+            padding: 4px 3px;
             text-align: center;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 9px;
+            white-space: nowrap;
           }
           
           .recipe-table td {
             border: 1px solid #ddd;
-            padding: 6px;
+            padding: 4px 3px;
             text-align: center;
             vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           
           .recipe-table .item-name {
@@ -141,23 +147,25 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
           @media print {
             body { 
               margin: 0; 
-              padding: 15px;
+              padding: 6px;
             }
             .subcategory-section { 
               page-break-inside: avoid; 
-              margin-bottom: 30px;
+              margin-bottom: 12px;
             }
             .recipe-table { 
               page-break-inside: avoid; 
             }
             .print-header {
-              margin-bottom: 20px;
+              margin-bottom: 10px;
             }
+            /* Slight print scale to fit width */
+            html { zoom: 0.9; }
           }
           
           @page {
-            margin: 0.5in;
-            size: A4;
+            margin: 8mm;
+            size: A4 landscape;
           }
         </style>
       </head>
@@ -174,6 +182,7 @@ export const printRecipeBlock = async (blockName, blockData, onPrintComplete = n
           </div>
         </div>
         
+        ${generateAggregatedSummary(blockData)}
         ${generateBlockContent(blockData)}
         
         <div class="print-footer">
@@ -250,6 +259,76 @@ const generateBlockContent = (blockData) => {
   });
   
   return content;
+};
+
+// Build an aggregated ingredient summary for the whole block (all subcategories)
+const generateAggregatedSummary = (blockData) => {
+  if (!blockData || Object.keys(blockData).length === 0) return '';
+
+  // Collect totals per ingredient across the entire block
+  const ingredientTotalsMap = {};
+
+  const addToTotal = (name, qty) => {
+    if (!name) return;
+    const quantity = parseFloat(qty) || 0;
+    if (!ingredientTotalsMap[name]) ingredientTotalsMap[name] = 0;
+    ingredientTotalsMap[name] += quantity;
+  };
+
+  Object.values(blockData).forEach(recipes => {
+    if (!Array.isArray(recipes)) return;
+
+    recipes.forEach(recipe => {
+      const orderQty = parseFloat(recipe.orderQty || recipe.savedOrderQty || 1) || 1;
+
+      // Legacy array structure
+      if (Array.isArray(recipe?.ingredients)) {
+        recipe.ingredients.forEach(ing => addToTotal(ing.name, (parseFloat(ing.qty) || 0) * orderQty));
+      }
+      // Object map structure
+      else if (recipe?.ingredients && typeof recipe.ingredients === 'object') {
+        Object.entries(recipe.ingredients).forEach(([name, qty]) => addToTotal(name, (parseFloat(qty) || 0) * orderQty));
+      }
+      // MongoDB items[0].ingredientValues structure
+      else if (recipe?.items && recipe.items[0]?.ingredientValues) {
+        Object.entries(recipe.items[0].ingredientValues).forEach(([name, qty]) => addToTotal(name, (parseFloat(qty) || 0) * orderQty));
+      }
+    });
+  });
+
+  const ingredientNames = Object.keys(ingredientTotalsMap);
+  if (ingredientNames.length === 0) return '';
+
+  // Sort by name for stable view
+  ingredientNames.sort((a, b) => a.localeCompare(b));
+
+  const rows = ingredientNames.map(name => `
+      <tr>
+        <td class="item-name">${name}</td>
+        <td class="ingredient-value" style="text-align:right;">${ingredientTotalsMap[name].toFixed(2)}</td>
+      </tr>
+  `).join('');
+
+  return `
+    <div class="subcategory-section" style="margin-bottom:20px;">
+      <div class="subcategory-title">Aggregated Ingredient Summary</div>
+      <table class="recipe-table">
+        <thead>
+          <tr>
+            <th style="width: 220px;">Ingredient</th>
+            <th style="width: 120px;">Total Qty (All Recipes)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr class="total-row">
+            <td class="item-name"><strong>Total Ingredients</strong></td>
+            <td><strong>${ingredientNames.length}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
 };
 
 // Generate recipe table for a subcategory

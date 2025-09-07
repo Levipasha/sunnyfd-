@@ -234,7 +234,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
         },
         items: [{
           name: newRecipe.description,
-          order: 1,
+          order: 0,
           per: 1,
           totalQty: 1,
           ingredientValues: ingredientValues
@@ -258,8 +258,8 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
       const isUpdate = newRecipe.mongoId;
       const method = isUpdate ? 'PUT' : 'POST';
       const url = isUpdate 
-        ? `https://sunny-b.onrender.com/recipes/${newRecipe.mongoId}`
-        : 'https://sunny-b.onrender.com/recipes';
+        ? `https://sunny-bd.onrender.com/recipes/${newRecipe.mongoId}`
+        : 'https://sunny-bd.onrender.com/recipes';
       
       console.log('🔍 Debug: URL:', url);
       console.log('🔍 Debug: Method:', method);
@@ -410,7 +410,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
         createdBy: 'system'
       };
       
-      const response = await fetch('https://sunny-b.onrender.com/recipes', {
+      const response = await fetch('https://sunny-bd.onrender.com/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -456,7 +456,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
           subCategory: updatedRecipe.subCategory,
           items: [{
             name: updatedRecipe.description,
-            order: 1,
+            order: 0,
             per: 1,
             totalQty: 1,
             ingredientValues: updatedRecipe.ingredients ? 
@@ -505,7 +505,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
           createdBy: 'system'
         };
         
-        const response = await fetch(`https://sunny-b.onrender.com/recipes/${updatedRecipe.mongoId}`, {
+        const response = await fetch(`https://sunny-bd.onrender.com/recipes/${updatedRecipe.mongoId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -538,7 +538,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
     // Also delete the recipe from MongoDB if it has a mongoId
     if (recipeToDelete && recipeToDelete.mongoId) {
       try {
-        const response = await fetch(`https://sunny-b.onrender.com/recipes/${recipeToDelete.mongoId}`, {
+        const response = await fetch(`https://sunny-bd.onrender.com/recipes/${recipeToDelete.mongoId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

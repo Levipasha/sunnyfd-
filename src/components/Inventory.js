@@ -3,8 +3,7 @@ import { inventoryOrder } from '../data';
 import { 
   updateInventoryItem, 
   addInventoryItem, 
-  deleteInventoryItem,
-  prepareForNextDay
+  deleteInventoryItem
 } from '../services/inventoryService';
 import { initializeDailyRollover, getCurrentCycleDate } from '../utils/inventoryConsumption';
 import InventoryRecordService from '../services/inventoryRecordService';
@@ -32,7 +31,8 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
     primaryUnit: 'kg',
     customPrimaryUnit: '',
     secondaryUnit: '',
-    quantityPerSecondaryUnit: 0
+    quantityPerSecondaryUnit: 0,
+    minimumQuantity: 0
   });
   
   // Search state
@@ -40,7 +40,35 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
   
   // Save records state
   const [savingToRecords, setSavingToRecords] = useState(false);
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
+  const [lastManualSaveTime, setLastManualSaveTime] = useState(null);
 
+
+  // Countdown to next auto-save at midnight (local time)
+  const [nextSaveCountdown, setNextSaveCountdown] = useState(() => {
+    const now = new Date();
+    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const ms = nextMidnight - now;
+    const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+      const ms = nextMidnight - now;
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      setNextSaveCountdown(`${hours}:${minutes}:${seconds}`);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
 
   // Helper function to get display unit for an item
@@ -187,15 +215,15 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
     // Only initialize rollover once when component mounts, not every time inventory changes
     const cleanup = initializeDailyRollover(inventory, setInventory);
     
-    // Set up automatic record saving at 6 AM
+    // Set up automatic record saving at 12 AM
     const checkAndSaveRecords = async () => {
       const now = new Date();
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
       
-      // Check if it's exactly 6 AM (cycle change time)
-      if (currentHour === 6 && currentMinute === 0) {
-        console.log('🕕 6 AM detected - Automatically saving inventory to records...');
+      // Check if it's exactly 12 AM (cycle change time)
+      if (currentHour === 0 && currentMinute === 0) {
+        console.log('🕛 12 AM detected - Automatically saving inventory to records...');
         
         try {
           // Get yesterday's date (end of previous cycle) - ensure proper date handling
@@ -263,6 +291,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
           }
           
           console.log(`✅ Automatically saved ${savedCount} inventory items to records for ${yesterdayLocal.toLocaleDateString()}`);
+          setLastAutoSaveTime(new Date());
           
         } catch (error) {
           console.error('❌ Error during automatic record saving:', error);
@@ -270,7 +299,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       }
     };
     
-    // Check every minute for 6 AM
+    // Check every minute for 12 AM
     const recordInterval = setInterval(checkAndSaveRecords, 60000);
     
     return () => {
@@ -406,6 +435,159 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
     alert(`🔍 Debug info logged to console for ${testItem.name}\n\nCheck console for detailed calculations.`);
   };
 
+  // Move focus to next Received input on Enter (Excel-like navigation)
+  const handleReceivedEnter = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const receivedInputs = Array.from(document.querySelectorAll('input.received'));
+      const current = event.currentTarget;
+      const index = receivedInputs.indexOf(current);
+      if (index !== -1) {
+        const nextInput = receivedInputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select();
+        }
+      }
+    }
+  };
+
+  // Move focus to next Received2 input on Enter (Excel-like navigation)
+  const handleReceived2Enter = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const receivedInputs = Array.from(document.querySelectorAll('input.received2'));
+      const current = event.currentTarget;
+      const index = receivedInputs.indexOf(current);
+      if (index !== -1) {
+        const nextInput = receivedInputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select();
+        }
+      }
+    }
+  };
+  // Print entire inventory in an Excel-like table
+  const handlePrintInventory = () => {
+    try {
+      const printWindow = window.open('', '_blank');
+      const title = `Inventory Report - ${new Date().toLocaleString()}`;
+      const styles = `
+        <style>
+          body { font-family: Arial, sans-serif; margin: 16px; }
+          .header { text-align: center; margin-bottom: 16px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
+          th { background: #007bff; color: #fff; position: sticky; top: 0; }
+          tr:nth-child(even) { background: #f9f9f9; }
+          .right { text-align: right; }
+          @media print { .no-print { display: none; } }
+        </style>
+      `;
+
+      const getUnit = (item) => item.unit || item.customPrimaryUnit || item.primaryUnit || 'kg';
+
+      const rowsHtml = filteredInventory.map((item, idx) => {
+        const opening = parseFloat(item.openingStock) || 0;
+        const received = parseFloat(item.received) || 0;
+        const consumed = parseFloat(item.consumed) || 0;
+        const total = opening + received - consumed;
+        const received2 = parseFloat(item.received2) || 0;
+        const consumed2 = parseFloat(item.consumed2) || 0;
+        const final = total + received2 - consumed2;
+        const unit = getUnit(item);
+        return `
+          <tr>
+            <td class="right">${idx + 1}</td>
+            <td>${item.name}</td>
+            <td class="right">${opening.toFixed(2)}</td>
+            <td class="right">${received.toFixed(2)}</td>
+            <td class="right">${consumed.toFixed(2)}</td>
+            <td class="right">${total.toFixed(2)}</td>
+            <td class="right">${received2.toFixed(2)}</td>
+            <td class="right">${consumed2.toFixed(2)}</td>
+            <td class="right">${final.toFixed(2)}</td>
+            <td>${unit}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const totals = filteredInventory.reduce((acc, item) => {
+        const opening = parseFloat(item.openingStock) || 0;
+        const received = parseFloat(item.received) || 0;
+        const consumed = parseFloat(item.consumed) || 0;
+        const total = opening + received - consumed;
+        const received2 = parseFloat(item.received2) || 0;
+        const consumed2 = parseFloat(item.consumed2) || 0;
+        const final = total + received2 - consumed2;
+        acc.opening += opening; acc.received += received; acc.consumed += consumed;
+        acc.total += total; acc.received2 += received2; acc.consumed2 += consumed2; acc.final += final;
+        return acc;
+      }, { opening: 0, received: 0, consumed: 0, total: 0, received2: 0, consumed2: 0, final: 0 });
+
+      const totalsRow = `
+        <tr style="font-weight: bold; background: #e9ecef;">
+          <td colspan="2">TOTAL</td>
+          <td class="right">${totals.opening.toFixed(2)}</td>
+          <td class="right">${totals.received.toFixed(2)}</td>
+          <td class="right">${totals.consumed.toFixed(2)}</td>
+          <td class="right">${totals.total.toFixed(2)}</td>
+          <td class="right">${totals.received2.toFixed(2)}</td>
+          <td class="right">${totals.consumed2.toFixed(2)}</td>
+          <td class="right">${totals.final.toFixed(2)}</td>
+          <td></td>
+        </tr>
+      `;
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${title}</title>
+            ${styles}
+          </head>
+          <body>
+            <div class="header">
+              <h2>Inventory Report</h2>
+              <div>${new Date().toLocaleString()}</div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Item Name</th>
+                  <th>Opening</th>
+                  <th>Received</th>
+                  <th>Consumed</th>
+                  <th>Total</th>
+                  <th>Received2</th>
+                  <th>Consumed2</th>
+                  <th>Final</th>
+                  <th>Unit</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+                ${totalsRow}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } catch (error) {
+      console.error('Failed to print inventory:', error);
+      alert('Failed to print inventory: ' + error.message);
+    }
+  };
+
 
 
   // Auto-refresh calculations for existing items
@@ -494,7 +676,8 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       primaryUnit: item.primaryUnit || 'kg',
       customPrimaryUnit: item.customPrimaryUnit || '',
       secondaryUnit: item.secondaryUnit || '',
-      quantityPerSecondaryUnit: item.quantityPerSecondaryUnit || 0
+      quantityPerSecondaryUnit: item.quantityPerSecondaryUnit || 0,
+      minimumQuantity: item.minimumQuantity || 0
     });
     setEditPanelOpen(true);
   };
@@ -506,7 +689,8 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       primaryUnit: 'kg',
       customPrimaryUnit: '',
       secondaryUnit: '',
-      quantityPerSecondaryUnit: 0
+      quantityPerSecondaryUnit: 0,
+      minimumQuantity: 0
     });
   };
 
@@ -520,6 +704,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
         customPrimaryUnit: tempUnits.customPrimaryUnit,
         secondaryUnit: tempUnits.secondaryUnit,
         quantityPerSecondaryUnit: tempUnits.quantityPerSecondaryUnit,
+        minimumQuantity: parseFloat(tempUnits.minimumQuantity) || 0,
         unit: tempUnits.primaryUnit === 'custom' ? tempUnits.customPrimaryUnit : tempUnits.primaryUnit
       };
       
@@ -692,6 +877,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       
       // Show success message
       if (savedCount > 0) {
+        setLastManualSaveTime(new Date());
         alert(`✅ Successfully saved ${savedCount} inventory items to records for ${todayLocal.toLocaleDateString()}\n\nTotal inventory items: ${inventory.length}\nSuccessfully saved: ${savedCount}\nFailed to save: ${errorCount}\nUnique item names: ${uniqueNames.length}\nDuplicate names: ${duplicateNames.length > 0 ? duplicateNames.length : 'None'}`);
       } else {
         alert('❌ Failed to save any records. Please check the console for errors.');
@@ -705,46 +891,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
     }
   };
 
-  // Function to prepare inventory for next day
-  const handlePrepareNextDay = async () => {
-    try {
-      const shouldProceed = window.confirm(
-        'This will prepare your inventory for the next day.\n\n' +
-        '✅ Final stock will become opening stock for tomorrow\n' +
-        '✅ Received and consumed fields will be reset to 0\n' +
-        '✅ New inventory records will be created for tomorrow\n\n' +
-        'Do you want to proceed?'
-      );
-      
-      if (!shouldProceed) {
-        return;
-      }
-
-      // Call the backend to prepare for next day
-      const updatedItems = await prepareForNextDay();
-      
-      // Update local state with the new values
-      setInventory(updatedItems);
-      
-      // Recalculate all items to ensure calculations are correct
-      setTimeout(() => {
-        recalculateAllItems();
-      }, 100);
-      
-      alert(
-        '✅ Inventory prepared for next day successfully!\n\n' +
-        `Updated ${updatedItems.length} items.\n` +
-        '✅ Today\'s balance has been set as tomorrow\'s opening stock\n' +
-        '✅ All received and consumed fields have been reset to 0\n' +
-        '✅ New inventory records have been created for tomorrow\n\n' +
-        'You can now start entering new transactions for tomorrow!'
-      );
-      
-    } catch (error) {
-      console.error('Failed to prepare inventory for next day:', error);
-      alert('❌ Error preparing inventory for next day: ' + error.message);
-    }
-  };
+  // Manual Prepare Next Day flow removed; rollover handled automatically at 12 AM
 
   const filteredInventory = useMemo(() => {
     const orderMap = new Map();
@@ -773,7 +920,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
         <div>
           <h2>Inventory Management</h2>
           <p className="text-muted mb-0">
-            <strong>Current Cycle:</strong> {getCurrentCycleDate()} (6 AM to 6 AM)
+            <strong>Current Cycle:</strong> {getCurrentCycleDate()} (12 AM to 12 AM)
           </p>
           <p className="permission-indicator mb-0">
             {isAuthenticated ? 
@@ -785,25 +932,40 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                         </p>
 
             <p className="text-muted mb-0" style={{fontSize: '12px'}}>
-            💾 Records are automatically saved at 6 AM daily (end of each cycle)
+            💾 Records are automatically saved at 12 AM daily (end of each cycle)
           </p>
+          <div className="digital-timer">
+            <span className="label">⏳ Time left to prepare:</span>
+            <span className="flip-timer" aria-label={`Time left ${nextSaveCountdown}`}>
+              {nextSaveCountdown.split('').map((ch, idx) => (
+                ch === ':' ? (
+                  <span key={idx} className="flip-sep">:</span>
+                ) : (
+                  <span key={idx} className="flip-digit">{ch}</span>
+                )
+              ))}
+            </span>
+          </div>
+          <p className="text-muted mb-0" style={{fontSize: '12px'}}>
+            ✅ Auto Prepare Next: Active • {lastAutoSaveTime ? `Last auto-save: ${new Date(lastAutoSaveTime).toLocaleTimeString()}` : 'No auto-save yet this session'}
+          </p>
+          {lastManualSaveTime && (
+            <p className="text-muted mb-0" style={{fontSize: '12px'}}>
+              💾 Last manual save: {new Date(lastManualSaveTime).toLocaleTimeString()}
+            </p>
+          )}
         </div>
         
-        {isAuthenticated && (
-          <div className="header-actions">
-            <button
-              className="btn btn-success btn-sm"
-              onClick={handlePrepareNextDay}
-              title="Prepare inventory for next day (today's balance becomes tomorrow's opening stock)"
-            >
-              <i className="fas fa-calendar-plus me-2"></i>
-              Prepare Next Day
-            </button>
-            <div className="text-muted mt-2" style={{fontSize: '12px'}}>
-              💡 <strong>How it works:</strong> Today's balance in the "Balance" column will become tomorrow's opening stock
-            </div>
-          </div>
-        )}
+        <div className="header-actions">
+          <button
+            className="btn btn-info btn-sm"
+            onClick={handlePrintInventory}
+            title="Print inventory table"
+          >
+            <i className="fas fa-print me-2"></i>
+            Print
+          </button>
+        </div>
       </div>
 
       {isAuthenticated && (
@@ -830,8 +992,9 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                   onChange={(e) => setNewItem({ ...newItem, openingStock: parseFloat(e.target.value) || 0 })}
                 />
               </div>
+              {/* Minimum Quantity */}
               <div className="col-6 col-md-2">
-                <label className="form-label">Minimum Quantity</label>
+                <label className="form-label">Minimum Qty</label>
                 <input
                   className="form-control"
                   type="text"
@@ -1089,10 +1252,10 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
               <th>#</th>
               <th>Item Name</th>
               <th>Opening Stock</th>
-              <th>Min Qty</th>
+              {/* Min Qty column hidden intentionally */}
               <th>Received</th>
               <th>Consumed</th>
-              <th>Total</th>
+              <th>Total 1</th>
               <th>Received</th>
               <th>Consumed</th>
               <th>Balance</th>
@@ -1136,37 +1299,20 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                       </span>
                     </div>
                   </td>
-                  <td>
-                    <div className="d-flex align-items-center">
-                                            <input
-                        type="number"
-                        inputMode="decimal"
-                        className="form-control form-control-sm inventory-input"
-                        value={parseFloat(minimumQty) || 0}
-                        onChange={e => handleValueChange(item.id, 'minimumQuantity', parseFloat(e.target.value) || 0)}
-                        onWheel={e => e.currentTarget.blur()}
-                        readOnly={false}
-                        disabled={false}
-                        style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
-
-                      />
-                    <span className="ms-2 text-muted" style={{fontSize: '12px', fontWeight: '500'}}>
-                      {getDisplayUnit(item)}
-                    </span>
-                  </div>
-                </td>
+                  {/* Min Qty cell hidden intentionally */}
                 <td>
                   <div className="d-flex align-items-center">
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input"
+                      className="form-control form-control-sm inventory-input received"
                       value={parseFloat(item.received) || 0}
                       onChange={e => {
                         const value = parseFloat(e.target.value) || 0;
                         console.log('Received changed:', value);
                         handleValueChange(item.id, 'received', value);
                       }}
+                      onKeyDown={handleReceivedEnter}
                       onWheel={e => e.currentTarget.blur()}
                       readOnly={false}
                       disabled={false}
@@ -1202,16 +1348,15 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     </span>
                   </div>
                 </td>
-                <td className="calculated-value total-value" style={{minWidth: '180px', width: '180px'}}>
+                <td className="calculated-value total1-value" style={{minWidth: '140px', width: '140px'}}>
                   <div className="d-flex align-items-center justify-content-center">
                     <span>
                       {(() => {
-                        const totalKgs = ((item.openingStock || 0) + (item.received || 0)) - (item.consumed || 0);
+                        const total1Kgs = ((item.openingStock || 0) + (item.received || 0)) - (item.consumed || 0);
                         if (item.secondaryUnit && item.quantityPerSecondaryUnit > 0) {
                           const quantityPerBag = parseFloat(item.quantityPerSecondaryUnit) || 50;
-                          const bags = Math.floor(totalKgs / quantityPerBag);
-                          const remainingKgs = totalKgs - (bags * quantityPerBag);
-                          
+                          const bags = Math.floor(total1Kgs / quantityPerBag);
+                          const remainingKgs = total1Kgs - (bags * quantityPerBag);
                           if (bags > 0 && remainingKgs > 0) {
                             return `${bags} bags + ${remainingKgs.toFixed(2)} kgs`;
                           } else if (bags > 0) {
@@ -1220,7 +1365,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                             return `${remainingKgs.toFixed(2)} kgs`;
                           }
                         } else {
-                          return totalKgs;
+                          return total1Kgs;
                         }
                       })()}
                     </span>
@@ -1234,9 +1379,10 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input"
+                      className="form-control form-control-sm inventory-input received2"
                       value={parseFloat(item.received2) || 0}
                       onChange={e => handleValueChange(item.id, 'received2', parseFloat(e.target.value) || 0)}
+                      onKeyDown={handleReceived2Enter}
                       onWheel={e => e.currentTarget.blur()}
                       readOnly={false}
                       disabled={false}
@@ -1574,6 +1720,32 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                 </div>
               </div>
             )}
+
+            {/* Minimum Quantity */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600', color: '#333', fontSize: '14px' }}>
+                Minimum Quantity
+              </label>
+              <input
+                type="number"
+                placeholder="e.g., 10"
+                min="0"
+                step="0.01"
+                value={tempUnits.minimumQuantity}
+                onChange={(e) => setTempUnits({
+                  ...tempUnits,
+                  minimumQuantity: parseFloat(e.target.value) || 0
+                })}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ced4da',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  transition: 'border-color 0.3s ease'
+                }}
+              />
+            </div>
 
             {/* Preview Section */}
             <div style={{ marginTop: '20px' }}>

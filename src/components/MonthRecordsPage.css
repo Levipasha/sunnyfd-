@@ -204,6 +204,23 @@
   font-weight: 500;
 }
 
+.print-btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.print-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
 .no-records {
   text-align: center;
   padding: 60px 20px;

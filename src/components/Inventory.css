@@ -18,6 +18,43 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Enhanced print button styling for inventory header */
+.header-actions .btn.btn-info.btn-sm {
+  background: #06b6d4; /* cyan-500 */
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.25);
+  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.header-actions .btn.btn-info.btn-sm i { margin-right: 6px; }
+
+.header-actions .btn.btn-info.btn-sm:hover {
+  background: #0891b2; /* cyan-600 */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(8, 145, 178, 0.32);
+}
+
+/* Keep it visible but not stuck to the edge on wide screens */
+.inventory-header .header-actions { margin-right: 8px; }
+
+/* On small screens, anchor it inline under title for better reach */
+@media (max-width: 768px) {
+  .inventory-header { gap: 8px; }
+  .inventory-header .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .header-actions .btn.btn-info.btn-sm {
+    padding: 10px 16px;
+    border-radius: 14px;
+  }
+}
+
 /* Mobile Inventory Styles - Only applies to mobile devices */
 @media (max-width: 768px) {
   /* Header Section Mobile Optimization */
@@ -890,6 +927,97 @@
   font-size: 10px;
   color: #6c757d;
   font-style: italic;
+}
+
+/* Inventory header typography */
+.inventory-header h2 {
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #1f2937; /* slate-800 */
+}
+
+.inventory-header .text-muted {
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 13px;
+  color: #6b7280 !important; /* slate-500 */
+  line-height: 1.45;
+}
+
+/* Digital countdown styling */
+.digital-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.digital-timer .screen {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', Courier, monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 16px;
+  padding: 4px 8px;
+  color: #070808;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: inset 0 0 8px rgb(231, 223, 223), 0 2px 6px rgb(231, 228, 228);
+  border: 1px solid rgb(255, 255, 255);
+}
+
+.digital-timer .label {
+  color: #374151; /* slate-700 */
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+/* Compact flip-style timer */
+.flip-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flip-digit {
+  width: 22px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #3b3f46, #2a2e34);
+  color: #fff;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  border-radius: 4px;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+/* subtle center seam */
+.flip-digit::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 0;
+  border-top: 1px solid rgba(0,0,0,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.flip-sep {
+  color: #6b7280;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  margin: 0 2px;
+}
+
+/* Keep existing digital timer text small and unobtrusive */
+.digital-timer .label {
+  margin-right: 6px;
 }
 
 /* Tablet-specific optimizations */

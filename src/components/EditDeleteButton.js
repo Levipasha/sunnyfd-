@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AuthService from '../services/authService';
 
 const EditDeleteButton = ({ 
   recipe, 
@@ -68,11 +69,19 @@ const EditDeleteButton = ({
     alert("Recipe updated successfully!");
   };
 
-  const handleDeleteClick = () => {
-    if (window.confirm(`Are you sure you want to delete the recipe "${recipe.description}"?`)) {
-      if (onDeleteRecipe) {
-        onDeleteRecipe(recipe.id);
-      }
+  const handleDeleteClick = async () => {
+    const proceed = window.confirm(`Are you sure you want to delete the recipe "${recipe.description}"?`);
+    if (!proceed) return;
+    const entered = window.prompt('Enter your login password to confirm deletion:');
+    if (!entered) return;
+    try {
+      await AuthService.login('Vamshi', entered);
+    } catch (e) {
+      alert('Password incorrect. Deletion cancelled.');
+      return;
+    }
+    if (onDeleteRecipe) {
+      onDeleteRecipe(recipe.id);
     }
   };
 
@@ -164,9 +173,11 @@ const EditDeleteButton = ({
           border: '2px solid #007bff',
           borderRadius: '8px',
           padding: '20px',
-          maxWidth: '800px',
+          width: '90vw',
+          maxWidth: '1100px',
           maxHeight: '90vh',
-          overflow: 'auto',
+          overflowY: 'auto',
+          overflowX: 'hidden',
           boxShadow: '0 2px 10px rgba(0, 123, 255, 0.1)'
         }}>
           {/* Edit Header */}
@@ -266,10 +277,10 @@ const EditDeleteButton = ({
             <h5 style={{ margin: '0 0 15px 0', color: '#333', fontSize: '16px', fontWeight: '600' }}>
               Select Ingredients from Inventory:
             </h5>
-            <div style={{ marginBottom: '15px' }}>
+            <div style={{ marginBottom: '8px' }}>
               <input
                 type="text"
-                placeholder="Search ingredients..."
+                placeholder="Search ingredients... (type at least 2 letters)"
                 value={inventorySearch}
                 onChange={(e) => setInventorySearch(e.target.value)}
                 style={{
@@ -281,74 +292,9 @@ const EditDeleteButton = ({
                   background: 'white'
                 }}
               />
-            </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-              gap: '10px',
-              maxHeight: '200px',
-              overflowY: 'auto',
-              padding: '10px',
-              background: 'white',
-              border: '1px solid #dee2e6',
-              borderRadius: '6px'
-            }}>
-              {inventory
-                .filter(item => 
-                  item.name.toLowerCase().includes(inventorySearch.toLowerCase())
-                )
-                .map((item) => {
-                  const isAlreadyAdded = editData.ingredients.some(ing => ing.id === item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleAddIngredientFromInventory(item)}
-                      title={`${item.name} (${item.unit}) - ${isAlreadyAdded ? 'Click to remove' : 'Click to add'}`}
-                      style={{
-                        position: 'relative',
-                        padding: '12px',
-                        border: `1px solid ${isAlreadyAdded ? '#28a745' : '#dee2e6'}`,
-                        borderRadius: '6px',
-                        background: isAlreadyAdded ? '#d4edda' : 'white',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '4px',
-                        color: isAlreadyAdded ? '#155724' : 'inherit'
-                      }}
-                      onMouseOver={(e) => {
-                        if (!isAlreadyAdded) {
-                          e.target.style.borderColor = '#007bff';
-                          e.target.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (!isAlreadyAdded) {
-                          e.target.style.borderColor = '#dee2e6';
-                          e.target.style.boxShadow = 'none';
-                        }
-                      }}
-                    >
-                      <span style={{ fontWeight: '500', fontSize: '14px', lineHeight: '1.2' }}>
-                        {item.name}
-                      </span>
-                      <span style={{ fontSize: '12px', color: '#6c757d' }}>
-                        ({item.unit})
-                      </span>
-                      {isAlreadyAdded && (
-                        <i className="fas fa-check" style={{
-                          position: 'absolute',
-                          top: '8px',
-                          right: '8px',
-                          color: '#28a745',
-                          fontSize: '12px'
-                        }}></i>
-                      )}
-                    </button>
-                  );
-                })}
+              <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '6px' }}>
+                Start typing to search; results will appear below the table.
+              </div>
             </div>
           </div>
 
@@ -358,8 +304,10 @@ const EditDeleteButton = ({
               <h5 style={{ margin: '0 0 15px 0', color: '#333', fontSize: '16px', fontWeight: '600' }}>
                 Current Ingredients:
               </h5>
+              <div style={{ overflowX: 'auto', overflowY: 'hidden', width: '100%' }}>
               <table style={{
                 width: '100%',
+                minWidth: '900px',
                 borderCollapse: 'collapse',
                 background: 'white',
                 borderRadius: '6px',
@@ -544,6 +492,81 @@ const EditDeleteButton = ({
                   </tr>
                 </tbody>
               </table>
+              </div>
+            </div>
+          )}
+
+          {/* Inventory search results - shown only when query has 2+ characters */}
+          {inventorySearch.trim().length >= 2 && (
+            <div style={{ marginTop: '20px' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '10px',
+                maxHeight: '240px',
+                overflowY: 'auto',
+                padding: '10px',
+                background: 'white',
+                border: '1px solid #dee2e6',
+                borderRadius: '6px'
+              }}>
+                {inventory
+                  .filter(item => 
+                    item.name.toLowerCase().includes(inventorySearch.toLowerCase())
+                  )
+                  .map((item) => {
+                    const isAlreadyAdded = editData.ingredients.some(ing => ing.id === item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleAddIngredientFromInventory(item)}
+                        title={`${item.name} (${item.unit}) - ${isAlreadyAdded ? 'Click to remove' : 'Click to add'}`}
+                        style={{
+                          position: 'relative',
+                          padding: '12px',
+                          border: `1px solid ${isAlreadyAdded ? '#28a745' : '#dee2e6'}`,
+                          borderRadius: '6px',
+                          background: isAlreadyAdded ? '#d4edda' : 'white',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px',
+                          color: isAlreadyAdded ? '#155724' : 'inherit'
+                        }}
+                        onMouseOver={(e) => {
+                          if (!isAlreadyAdded) {
+                            e.target.style.borderColor = '#007bff';
+                            e.target.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          if (!isAlreadyAdded) {
+                            e.target.style.borderColor = '#dee2e6';
+                            e.target.style.boxShadow = 'none';
+                          }
+                        }}
+                      >
+                        <span style={{ fontWeight: '500', fontSize: '14px', lineHeight: '1.2' }}>
+                          {item.name}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#6c757d' }}>
+                          ({item.unit})
+                        </span>
+                        {isAlreadyAdded && (
+                          <i className="fas fa-check" style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            color: '#28a745',
+                            fontSize: '12px'
+                          }}></i>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
           )}
         </div>

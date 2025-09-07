@@ -134,9 +134,9 @@ const AddRecipeButton = ({ inventory = [], onSaveRecipe }) => {
       <button
         className="add-recipe-btn"
         onClick={() => setOpen(!open)}
-        title="Create a new sub-category with a recipe"
+        title="Add Sub Category"
       >
-        <i className="fas fa-plus"></i> Add Recipe
+        <i className="fas fa-plus"></i> Add Sub Category
       </button>
 
       {open && (

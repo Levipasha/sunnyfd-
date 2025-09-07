@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecordsTable from './RecordsTable';
+import InventoryRecordService from '../services/inventoryRecordService';
 import './MonthRecordsPage.css';
 
 const MonthRecordsPage = () => {
@@ -10,6 +11,7 @@ const MonthRecordsPage = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const resultsRef = useRef(null);
 
   const fetchData = async () => {
     if (!startDate || !endDate) {
@@ -27,30 +29,17 @@ const MonthRecordsPage = () => {
 
     try {
       console.log('🔍 Fetching records for date range:', startDate, 'to', endDate);
-      const response = await fetch(`/inventory-records?view=month&start=${startDate}&end=${endDate}`);
-      console.log('🔍 Response status:', response.status);
-      console.log('🔍 Response headers:', response.headers);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await InventoryRecordService.getRecords({
+        startDate: startDate,
+        endDate: endDate,
+        limit: 10000
+      });
       
-      const responseText = await response.text();
-      console.log('🔍 Response text:', responseText);
-      
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('🔍 JSON parse error:', parseError);
-        setError('Invalid response from server: ' + responseText.substring(0, 100));
-        return;
-      }
-      
-      if (data.success) {
-        setRecords(data.data);
+      if (response.success) {
+        setRecords(response.data || []);
       } else {
-        setError(data.message || 'Failed to fetch records');
+        setError(response.message || 'Failed to fetch records');
       }
     } catch (err) {
       console.error('🔍 Fetch error:', err);
@@ -87,6 +76,50 @@ const MonthRecordsPage = () => {
     
     setStartDate(start.toISOString().split('T')[0]);
     setEndDate(today.toISOString().split('T')[0]);
+  };
+
+  const handlePrint = () => {
+    try {
+      const printWindow = window.open('', '_blank');
+      const title = `Monthly Inventory Records (${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()})`;
+      const styles = `
+        <style>
+          body { font-family: Arial, sans-serif; margin: 16px; }
+          h2 { text-align: center; margin-bottom: 12px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ddd; padding: 6px; font-size: 11px; }
+          th { background: #007bff; color: #fff; position: sticky; top: 0; }
+          .rc-cell { display: inline-flex; gap: 6px; align-items: center; }
+          .rc-part { display: inline-block; padding: 2px 4px; border-radius: 4px; }
+          .rc-part.r { background: #e3f2fd; color: #0d47a1; }
+          .rc-part.c { background: #ffebee; color: #b71c1c; }
+        </style>
+      `;
+      const tableEl = resultsRef.current ? resultsRef.current.querySelector('table') : null;
+      const tableHtml = tableEl ? tableEl.outerHTML : '<p>No table content</p>';
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${title}</title>
+            ${styles}
+          </head>
+          <body>
+            <h2>${title}</h2>
+            ${tableHtml}
+          </body>
+        </html>
+      `;
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } catch (e) {
+      console.error('Print failed:', e);
+      alert('Failed to open print window.');
+    }
   };
 
   return (
@@ -170,12 +203,15 @@ const MonthRecordsPage = () => {
         )}
 
         {records.length > 0 && (
-          <div className="results-section">
+          <div className="results-section" ref={resultsRef}>
             <div className="results-header">
               <h3>
                 Records from {new Date(startDate).toLocaleDateString()} to {new Date(endDate).toLocaleDateString()}
               </h3>
               <span className="record-count">{records.length} records found</span>
+              <button className="print-btn" onClick={handlePrint} title="Print monthly records">
+                <i className="fas fa-print"></i> Print
+              </button>
             </div>
             <RecordsTable view="month" data={records} />
           </div>

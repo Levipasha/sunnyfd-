@@ -34,8 +34,8 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
         // Initialize orderQuantities with default values for each recipe
         const initialOrderQuantities = {};
         recipes.forEach(recipe => {
-          // Set default order quantity to 1 for each recipe so ingredient values are visible
-          initialOrderQuantities[recipe.id] = 1;
+          // Default order quantity should be 0
+          initialOrderQuantities[recipe.id] = 0;
         });
         setOrderQuantities(initialOrderQuantities);
         
@@ -76,7 +76,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
       setOrderQuantities(prev => {
         const newOrderQuantities = {};
         recipes.forEach(recipe => {
-          newOrderQuantities[recipe.id] = prev[recipe.id] || 1;
+          newOrderQuantities[recipe.id] = prev[recipe.id] ?? 0;
         });
         console.log('🔄 Updated order quantities:', newOrderQuantities);
         return newOrderQuantities;
@@ -198,7 +198,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
         },
         items: [{
           name: newRecipe.description,
-          order: 1,
+          order: 0,
           per: 1,
           totalQty: 1,
           ingredientValues: ingredientValues
@@ -213,7 +213,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
       
       console.log('🔍 Debug: Final recipeData being sent to MongoDB:', JSON.stringify(recipeData, null, 2));
       
-      const response = await fetch('https://sunny-b.onrender.com/recipes', {
+      const response = await fetch('https://sunny-bd.onrender.com/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -315,7 +315,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
         createdBy: 'system'
       };
       
-      const response = await fetch('https://sunny-b.onrender.com/recipes', {
+      const response = await fetch('https://sunny-bd.onrender.com/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -363,7 +363,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
           subCategory: updatedRecipe.subCategory,
           items: [{
             name: updatedRecipe.description,
-            order: 1,
+            order: 0,
             per: 1,
             totalQty: 1,
             ingredientValues: updatedRecipe.ingredients ? 
@@ -412,7 +412,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
           createdBy: 'system'
         };
         
-        const response = await fetch(`https://sunny-b.onrender.com/recipes/${updatedRecipe.mongoId}`, {
+        const response = await fetch(`https://sunny-bd.onrender.com/recipes/${updatedRecipe.mongoId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -445,7 +445,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
     // Also delete the recipe from MongoDB if it has a mongoId
     if (recipeToDelete && recipeToDelete.mongoId) {
       try {
-        const response = await fetch(`https://sunny-b.onrender.com/recipes/${recipeToDelete.mongoId}`, {
+        const response = await fetch(`https://sunny-bd.onrender.com/recipes/${recipeToDelete.mongoId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -511,46 +511,24 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
           <i className={`fas ${isPrinting ? 'fa-spinner fa-spin' : 'fa-print'}`}></i>
           {isPrinting ? 'Printing...' : 'Print Block'}
         </button>
-        
-        <button
-          onClick={refreshRecipes}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px'
+        <SaveButton 
+          recipes={orderedRecipes}
+          orderQuantities={orderQuantities}
+          categoryName="Showroom Block"
+          onSave={(savedRecipes) => {
+            console.log('Saved recipes:', savedRecipes);
           }}
-          title="Refresh data from MongoDB"
-        >
-          <i className="fas fa-sync-alt"></i>
-          Refresh Data
-        </button>
+          inventory={inventory}
+          setInventory={setInventory}
+        />
       </div>
 
-      {/* Add Recipe Button and Save Button - Fixed position */}
+      {/* Add Recipe Button */}
       <div style={{ position: 'relative', marginBottom: '20px', minHeight: '60px' }}>
         {isAuthenticated && (
           <AddRecipeButton inventory={inventory} onSaveRecipe={handleAddRecipe} />
         )}
-        <div style={{ position: 'absolute', top: '0', right: '0', minHeight: '40px', minWidth: '120px' }}>
-          <SaveButton 
-            recipes={orderedRecipes}
-            orderQuantities={orderQuantities}
-            categoryName="Showroom Block"
-            onSave={(savedRecipes) => {
-              console.log('Saved recipes:', savedRecipes);
-            }}
-            inventory={inventory}
-            setInventory={setInventory}
-          />
-        </div>
-                  </div>
+      </div>
 
       {/* Sub-Categories with their own tables */}
       {Object.keys(recipesBySubCategory).length > 0 &&
@@ -581,7 +559,7 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
                       <td>
                               <input
                                 type="number"
-                          value={orderQuantities[recipe.id] || ''}
+                          value={orderQuantities[recipe.id] ?? 0}
                           onChange={(e) => handleOrderQuantityChange(recipe.id, e.target.value)}
                                 placeholder="0"
                           style={{ width: '60px' }}
@@ -616,11 +594,14 @@ const ShowroomBlock = ({ inventory, setInventory, isAuthenticated, contentRef })
                         });
                       })()}
                       <td>
-                              <EditDeleteButton
-                                recipe={recipe}
-                          onEdit={handleEditRecipe}
-                          onDelete={handleDeleteRecipe}
-                        />
+                        {isAuthenticated && (
+                          <EditDeleteButton
+                            recipe={recipe}
+                            inventory={inventory}
+                            onEditRecipe={handleEditRecipe}
+                            onDeleteRecipe={handleDeleteRecipe}
+                          />
+                        )}
                       </td>
                     </tr>
                   ))}

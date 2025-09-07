@@ -272,7 +272,7 @@ const SaveButton = ({ recipes, orderQuantities, categoryName, onSave, inventory,
             
             try {
               console.log(`🔍 Debug: === TESTING CONSUMPTION FUNCTION ===`);
-              const testResult = await consumeIngredientsFromOrder(testRecipe, 1, inventory, setInventory);
+              const testResult = await consumeIngredientsFromOrder(testRecipe, 1, inventory, setInventory, { useSecondCycleForConsumption: false });
               console.log(`🔍 Debug: Test consumption result:`, testResult);
               console.log(`🔍 Debug: Inventory after test consumption:`, inventory);
               console.log(`🔍 Debug: === TEST CONSUMPTION COMPLETED ===`);
@@ -361,7 +361,14 @@ const SaveButton = ({ recipes, orderQuantities, categoryName, onSave, inventory,
               });
               
               console.log(`🔍 Debug: About to call consumeIngredientsFromOrder...`);
-              const consumptionResult = await consumeIngredientsFromOrder(consumptionRecipe, orderQty, inventory, setInventory);
+              const useSecondCycleForConsumption = ['qameer', 'cross_update'].includes(getDatabaseCategory(categoryName));
+              const consumptionResult = await consumeIngredientsFromOrder(
+                consumptionRecipe,
+                orderQty,
+                inventory,
+                setInventory,
+                { useSecondCycleForConsumption }
+              );
               console.log(`🔍 Debug: consumeIngredientsFromOrder result:`, consumptionResult);
               console.log(`🔍 Debug: Recipe data after consumption:`, recipe);
               

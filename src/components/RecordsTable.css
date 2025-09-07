@@ -75,6 +75,15 @@
   text-align: right;
 }
 
+/* Add vertical separators between each date column */
+.date-col {
+  border-right: 2px solid #bfc7d1;
+}
+
+.date-data {
+  border-right: 1px solid #c7ced8;
+}
+
 .unit-column {
   width: 80px;
   min-width: 80px;
@@ -95,6 +104,28 @@
   font-family: 'Courier New', monospace;
   font-weight: 500;
   color: #374151;
+}
+
+/* Split R and C with a clean vertical divider for clarity */
+.rc-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rc-part {
+  display: inline-block;
+}
+
+.rc-divider {
+  width: 1px;
+  height: 16px;
+  background: #bfc7d1;
+}
+
+/* Add subtle separator before totals columns to distinguish from dates */
+.totals-separator {
+  border-left: 2px solid #bfc7d1;
 }
 
 .unit-cell {

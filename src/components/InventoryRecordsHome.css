@@ -1,141 +1,113 @@
+/* Improved Inventory Records Home styles */
 .inventory-records-home {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(1200px 800px at 20% -20%, #7c83ff 0%, transparent 60%),
+              radial-gradient(1200px 800px at 120% 120%, #8b5cf6 0%, transparent 60%),
+              linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
 }
 
 .home-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
   border-radius: 20px;
-  padding: 60px 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 56px 40px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   width: 100%;
+  border: 1px solid rgba(255,255,255,0.6);
 }
 
 .home-title {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 2.6rem;
+  font-weight: 800;
   color: #333;
-  margin-bottom: 50px;
+  margin-bottom: 44px;
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: .4px;
 }
 
 .buttons-container {
   display: flex;
-  gap: 30px;
+  gap: 28px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .record-button {
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 15px;
-  padding: 30px 25px;
+  background: #ffffff;
+  border: 2px solid #eef2ff;
+  border-radius: 16px;
+  padding: 28px 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  min-width: 250px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  min-width: 260px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .record-button:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
 }
 
 .day-button:hover {
   border-color: #3b82f6;
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), 0 16px 32px rgba(59, 130, 246, 0.15);
+  background: linear-gradient(135deg, #eef4ff, #dbeafe);
 }
 
 .month-button:hover {
   border-color: #10b981;
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12), 0 16px 32px rgba(16, 185, 129, 0.15);
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
 }
 
 .button-icon {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  padding: 16px;
+  font-size: 2.4rem;
+  margin-bottom: 18px;
+  padding: 14px;
   border-radius: 50%;
-  background: #f8f9fa;
-  transition: all 0.3s ease;
+  background: #f8fafc;
+  transition: transform .25s ease, background-color .25s ease, color .25s ease;
 }
 
-.day-button .button-icon {
-  color: #3b82f6;
-}
+.day-button .button-icon { color: #3b82f6; }
+.month-button .button-icon { color: #10b981; }
 
-.month-button .button-icon {
-  color: #10b981;
-}
-
-.record-button:hover .button-icon {
-  transform: scale(1.1);
-}
-
-.day-button:hover .button-icon {
-  background: #3b82f6;
-  color: white;
-}
-
-.month-button:hover .button-icon {
-  background: #10b981;
-  color: white;
-}
+.record-button:hover .button-icon { transform: scale(1.08); }
+.day-button:hover .button-icon { background: #3b82f6; color: #fff; }
+.month-button:hover .button-icon { background: #10b981; color: #fff; }
 
 .button-content h3 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
 }
 
 .button-content p {
-  color: #666;
-  font-size: 1rem;
+  color: #6b7280;
+  font-size: 0.98rem;
   margin: 0;
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .home-container {
-    padding: 40px 20px;
-  }
-  
-  .home-title {
-    font-size: 2rem;
-    margin-bottom: 30px;
-  }
-  
-  .buttons-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .record-button {
-    min-width: 200px;
-    padding: 25px 20px;
-  }
-  
-  .button-icon {
-    font-size: 2rem;
-    padding: 12px;
-  }
-  
-  .button-content h3 {
-    font-size: 1.3rem;
-  }
+  .home-container { padding: 36px 20px; }
+  .home-title { font-size: 2.1rem; margin-bottom: 28px; }
+  .buttons-container { flex-direction: column; gap: 18px; }
+  .record-button { min-width: 100%; padding: 24px 18px; }
+  .button-icon { font-size: 2.1rem; padding: 12px; }
+  .button-content h3 { font-size: 1.25rem; }
 }

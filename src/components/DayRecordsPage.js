@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecordsTable from './RecordsTable';
+import InventoryRecordService from '../services/inventoryRecordService';
 import './DayRecordsPage.css';
 
 const DayRecordsPage = () => {
@@ -20,74 +21,19 @@ const DayRecordsPage = () => {
     setError('');
 
     try {
-      console.log('🔍 Fetching records for date:', date);
-      
-      // First, check if there are existing records for this date
-      const checkResponse = await fetch(`/inventory-records?view=day&date=${date}`);
-      if (!checkResponse.ok) {
-        throw new Error(`HTTP error! status: ${checkResponse.status}`);
-      }
-      
-      const checkData = await checkResponse.json();
-      const existingRecords = checkData.success ? checkData.data : [];
-      
-      console.log(`🔍 Found ${existingRecords.length} existing records for ${date}`);
-      
-      // Only generate missing records if there are no existing records
-      if (existingRecords.length === 0) {
-        console.log('🔍 No existing records found, generating missing records...');
-        
-        const generateResponse = await fetch('/inventory-records/generate-missing', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ date }),
-        });
+      console.log('🔍 Fetching records for date (day view):', date);
 
-        if (!generateResponse.ok) {
-          console.warn('⚠️ Failed to generate missing records, continuing with existing records');
-        } else {
-          const generateData = await generateResponse.json();
-          if (generateData.success) {
-            console.log('✅ Auto-generated missing records:', generateData.data.generated || 0);
-          }
-        }
+      // New API usage: view=day with exact date string (YYYY-MM-DD)
+      const response = await InventoryRecordService.getRecords({
+        view: 'day',
+        date,
+        limit: 10000
+      });
+      
+      if (response.success) {
+        setRecords(response.data || []);
       } else {
-        console.log('🔍 Records already exist, skipping generate-missing step');
-      }
-
-      // Use existing records if available, otherwise fetch fresh data
-      if (existingRecords.length > 0) {
-        console.log('🔍 Using existing records:', existingRecords.length);
-        setRecords(existingRecords);
-      } else {
-        // Fetch fresh data after generating missing records
-        console.log('🔍 Fetching fresh records for date:', date);
-        const response = await fetch(`/inventory-records?view=day&date=${date}`);
-        console.log('🔍 Response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const responseText = await response.text();
-        console.log('🔍 Response text:', responseText);
-        
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error('🔍 JSON parse error:', parseError);
-          setError('Invalid response from server: ' + responseText.substring(0, 100));
-          return;
-        }
-        
-        if (data.success) {
-          setRecords(data.data);
-        } else {
-          setError(data.message || 'Failed to fetch records');
-        }
+        setError(response.message || 'Failed to fetch records');
       }
     } catch (err) {
       console.error('🔍 Fetch error:', err);
@@ -154,7 +100,7 @@ const DayRecordsPage = () => {
                 setError('');
                 try {
                   console.log('🔄 Force generating missing records for date:', date);
-                  const generateResponse = await fetch('/inventory-records/generate-missing', {
+                  const generateResponse = await fetch('https://sunny-bd.onrender.com/inventory-records/generate-missing', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ date }),

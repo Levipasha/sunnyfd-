@@ -1,19 +1,30 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './MobileSidebar.css';
 
-const MobileSidebar = ({ isOpen, onClose }) => {
+const MobileSidebar = ({ isOpen, onClose, isAuthenticated, onLogout }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigationItems = [
     { path: '/', label: 'Inventory', icon: 'fas fa-boxes' },
     { path: '/orders', label: 'Orders', icon: 'fas fa-shopping-cart' },
-    { path: '/recipes', label: 'Recipes', icon: 'fas fa-book' },
     { path: '/inventory-records', label: 'Inventory Records', icon: 'fas fa-chart-line' },
   ];
 
   const handleLinkClick = () => {
     onClose();
+  };
+
+  const handleLogout = async () => {
+    try {
+      if (typeof onLogout === 'function') {
+        await onLogout();
+      }
+    } finally {
+      onClose();
+      navigate('/login');
+    }
   };
 
   // Close sidebar on escape key
@@ -86,10 +97,17 @@ const MobileSidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
           
-          <button className="logout-btn">
-            <i className="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-          </button>
+          {isAuthenticated ? (
+            <button className="logout-btn" onClick={handleLogout}>
+              <i className="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          ) : (
+            <Link to="/login" className="logout-btn" onClick={onClose}>
+              <i className="fas fa-sign-in-alt"></i>
+              <span>Login</span>
+            </Link>
+          )}
         </div>
       </aside>
     </>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import BlockSelector from './BlockSelector';
-import PrintButton from './print';
 import { updateInventoryItem } from '../services/inventoryService';
 import './Orders.css';
 import './OrdersMobile.css';
@@ -533,13 +532,6 @@ const Orders = ({ inventory, setInventory, records, setRecords, isAuthenticated 
             ONE
           </button>
         )}
-        
-        <PrintButton 
-          className="print-btn"
-          onPrint={(savedRecipes) => {
-            console.log('Printing saved recipes:', savedRecipes);
-          }}
-        />
         
         {customCategories.map(cat => (
           <button 

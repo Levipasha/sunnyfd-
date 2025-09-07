@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-b.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sunny-bd.onrender.com';
 
 export const recipeService = {
   // Save a recipe to MongoDB (creates new or updates existing)

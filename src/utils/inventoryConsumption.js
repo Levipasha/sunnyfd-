@@ -1,11 +1,11 @@
 /**
  * Inventory Consumption System
  * Handles automatic consumption of ingredients when recipes are saved
- * Manages daily cycles (6 AM to 6 AM) and stock tracking
+ * Manages daily cycles (12 AM to 12 AM) and stock tracking
  */
 
-// Daily cycle constants (6 AM to 6 AM)
-const CYCLE_START_HOUR = 6;
+// Daily cycle constants (12 AM to 12 AM)
+const CYCLE_START_HOUR = 0;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 // Calculate split unit consumption intelligently
@@ -66,18 +66,18 @@ const calculateSplitUnitConsumption = (inventoryItem, totalConsumedQty) => {
   };
 };
 
-// Get current cycle date (6 AM to 6 AM)
+// Get current cycle date (12 AM to 12 AM)
 export const getCurrentCycleDate = () => {
   const now = new Date();
   const currentHour = now.getHours();
   
-  // If it's before 6 AM, use yesterday's date
+  // If it's before cycle start time, use yesterday's date (for 12 AM this never triggers)
   if (currentHour < CYCLE_START_HOUR) {
     const yesterday = new Date(now.getTime() - MILLISECONDS_PER_DAY);
     return yesterday.toISOString().split('T')[0]; // YYYY-MM-DD format
   }
   
-  // If it's 6 AM or after, use today's date
+  // If it's cycle start hour or after, use today's date
   return now.toISOString().split('T')[0];
 };
 
@@ -112,11 +112,11 @@ export const shouldRolloverDay = () => {
   const currentHour = currentDate.getHours();
   const currentMinute = currentDate.getMinutes();
   
-  // Check if it's exactly 6 AM
+  // Check if it's exactly cycle start hour (12 AM)
   const shouldRollover = currentHour === CYCLE_START_HOUR && currentMinute === 0;
   
   if (shouldRollover) {
-    console.log('🔍 DEBUG: Rollover check - 6 AM detected');
+    console.log('🔍 DEBUG: Rollover check - 12 AM detected');
   } else {
     // Log rollover check timing for debugging (but less frequently)
     if (currentMinute % 5 === 0) { // Only log every 5 minutes to reduce noise
@@ -307,7 +307,7 @@ export const consumeIngredientsFromRecipe = async (recipe, orderQty, inventory, 
       
       const updatePromises = itemsToUpdate.map(async (item) => {
         // Use the full URL in development, relative URL in production
-        const apiBaseUrl = process.env.NODE_ENV === 'production' ? '' : 'https://sunny-b.onrender.com';
+        const apiBaseUrl = process.env.REACT_APP_API_URL || 'https://sunny-bd.onrender.com';
         const url = `${apiBaseUrl}/inventory/${item.id}`;
         const body = JSON.stringify({
           name: item.name,
@@ -377,7 +377,7 @@ export const consumeIngredientsFromRecipe = async (recipe, orderQty, inventory, 
 };
 
 // Consume ingredients from inventory when order is placed (with split unit support)
-export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, setInventory) => {
+export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, setInventory, options = {}) => {
   isProcessingRecipe = true; // Set flag before processing
   lastRecipeProcessingTime = Date.now(); // Update last processing time
   
@@ -461,6 +461,8 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
     console.log(`🔍 DEBUG: Order quantity: ${orderQty}`);
     console.log(`🔍 DEBUG: Ingredients to consume:`, ingredientsToConsume);
     
+    const useSecondCycle = options.useSecondCycleForConsumption === true;
+    
     ingredientsToConsume.forEach(ingredient => {
       console.log(`🔍 DEBUG: Processing ingredient: ${ingredient.name}`);
       
@@ -490,18 +492,22 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
             consumedQty
           );
           
-          // Update split consumed fields
-          inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedPrimary;
-          inventoryItem.consumedSecondary = (parseFloat(inventoryItem.consumedSecondary) || 0) + consumedSecondary;
-          
-          // Update legacy consumed field
-          inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          // Update split consumed fields (cycle-aware)
+          if (useSecondCycle) {
+            inventoryItem.consumed2Primary = (parseFloat(inventoryItem.consumed2Primary) || 0) + consumedPrimary;
+            inventoryItem.consumed2Secondary = (parseFloat(inventoryItem.consumed2Secondary) || 0) + consumedSecondary;
+            inventoryItem.consumed2 = (parseFloat(inventoryItem.consumed2) || 0) + consumedQty;
+          } else {
+            inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedPrimary;
+            inventoryItem.consumedSecondary = (parseFloat(inventoryItem.consumedSecondary) || 0) + consumedSecondary;
+            inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          }
           
           console.log(`✅ Consumed ${consumedPrimary} ${inventoryItem.primaryUnit} + ${consumedSecondary} ${inventoryItem.secondaryUnit} (${consumedQty} total) from ${inventoryItem.name}`);
           console.log(`🔍 DEBUG: Updated consumption values for ${inventoryItem.name}:`, {
-            consumedPrimary: inventoryItem.consumedPrimary,
-            consumedSecondary: inventoryItem.consumedSecondary,
-            consumed: inventoryItem.consumed,
+            consumedPrimary: useSecondCycle ? inventoryItem.consumed2Primary : inventoryItem.consumedPrimary,
+            consumedSecondary: useSecondCycle ? inventoryItem.consumed2Secondary : inventoryItem.consumedSecondary,
+            consumed: useSecondCycle ? inventoryItem.consumed2 : inventoryItem.consumed,
             originalConsumed: parseFloat(inventoryItem.consumed) || 0,
             addedConsumed: consumedQty
           });
@@ -511,9 +517,15 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
           console.warn(`⚠️ Using standard consumption as fallback. Please fix the inventory item configuration.`);
           
           // Fall back to standard consumption
-          inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedQty;
-          inventoryItem.consumedSecondary = 0;
-          inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          if (useSecondCycle) {
+            inventoryItem.consumed2Primary = (parseFloat(inventoryItem.consumed2Primary) || 0) + consumedQty;
+            inventoryItem.consumed2Secondary = 0;
+            inventoryItem.consumed2 = (parseFloat(inventoryItem.consumed2) || 0) + consumedQty;
+          } else {
+            inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedQty;
+            inventoryItem.consumedSecondary = 0;
+            inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          }
           
           console.log(`✅ Consumed ${consumedQty} ${inventoryItem.name} (fallback due to config error)`);
         } else {
@@ -529,17 +541,21 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
           }
           
           // For standard consumption, put everything in primary units
-          inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedQty;
-          inventoryItem.consumedSecondary = 0;
-          
-          // Update legacy consumed field
-          inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          if (useSecondCycle) {
+            inventoryItem.consumed2Primary = (parseFloat(inventoryItem.consumed2Primary) || 0) + consumedQty;
+            inventoryItem.consumed2Secondary = 0;
+            inventoryItem.consumed2 = (parseFloat(inventoryItem.consumed2) || 0) + consumedQty;
+          } else {
+            inventoryItem.consumedPrimary = (parseFloat(inventoryItem.consumedPrimary) || 0) + consumedQty;
+            inventoryItem.consumedSecondary = 0;
+            inventoryItem.consumed = (parseFloat(inventoryItem.consumed) || 0) + consumedQty;
+          }
           
           console.log(`✅ Consumed ${consumedQty} ${inventoryItem.name} (standard consumption)`);
           console.log(`🔍 DEBUG: Updated consumption values for ${inventoryItem.name}:`, {
-            consumedPrimary: inventoryItem.consumedPrimary,
-            consumedSecondary: inventoryItem.consumedSecondary,
-            consumed: inventoryItem.consumed,
+            consumedPrimary: useSecondCycle ? inventoryItem.consumed2Primary : inventoryItem.consumedPrimary,
+            consumedSecondary: useSecondCycle ? inventoryItem.consumed2Secondary : inventoryItem.consumedSecondary,
+            consumed: useSecondCycle ? inventoryItem.consumed2 : inventoryItem.consumed,
             originalConsumed: parseFloat(inventoryItem.consumed) || 0,
             addedConsumed: consumedQty
           });
@@ -607,7 +623,7 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
     })));
     
     // Additional verification that consumed values are correct
-    const itemsWithConsumption = updatedInventory.filter(item => item.consumed > 0);
+    const itemsWithConsumption = updatedInventory.filter(item => (item.consumed > 0) || (item.consumed2 > 0));
     console.log(`🔍 DEBUG: Items with consumption after update:`, itemsWithConsumption.map(item => ({
       id: item.id,
       name: item.name,
@@ -617,7 +633,7 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
     
     try {
       // Update each modified inventory item in the database
-      const itemsToUpdate = updatedInventory.filter(item => item.consumed > 0);
+      const itemsToUpdate = updatedInventory.filter(item => (item.consumed > 0) || (item.consumed2 > 0));
       
       if (itemsToUpdate.length === 0) {
         console.log('🔍 DEBUG: No inventory items need updating');
@@ -639,7 +655,7 @@ export const consumeIngredientsFromOrder = async (recipe, orderQty, inventory, s
       
       try {
         const updatePromises = itemsToUpdate.map(async (item) => {
-          const apiBaseUrl = process.env.NODE_ENV === 'production' ? '' : 'https://sunny-b.onrender.com';
+          const apiBaseUrl = process.env.REACT_APP_API_URL || 'https://sunny-bd.onrender.com';
           const url = `${apiBaseUrl}/inventory/${item.id}`;
           
           const updateData = {
