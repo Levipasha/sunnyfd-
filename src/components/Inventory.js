@@ -5,7 +5,7 @@ import {
   addInventoryItem, 
   deleteInventoryItem
 } from '../services/inventoryService';
-import { initializeDailyRollover, getCurrentCycleDate } from '../utils/inventoryConsumption';
+import { initializeDailyRollover } from '../utils/inventoryConsumption';
 import InventoryRecordService from '../services/inventoryRecordService';
 import './Inventory.css';
 import './InventoryMobile.css';
@@ -918,20 +918,6 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       
       <div className="d-flex justify-content-between align-items-center mb-1 inventory-header">
         <div>
-          <h2>Inventory Management</h2>
-          <p className="text-muted mb-0">
-            <strong>Current Cycle:</strong> {getCurrentCycleDate()} (12 AM to 12 AM)
-          </p>
-          <p className="permission-indicator mb-0">
-            {isAuthenticated ? 
-              "🔓 Logged In: Can edit Opening Stock, Received, and Consumed" : 
-              "🔒 Logged Out: Can only edit Received fields"
-            }
-          </p>
-
-            <p className="text-muted mb-0" style={{fontSize: '11px'}}>
-            💾 Records are automatically saved at 12 AM daily (end of each cycle)
-          </p>
           <div className="digital-timer">
             <span className="label">⏳ Time left to prepare:</span>
             <span className="flip-timer" aria-label={`Time left ${nextSaveCountdown}`}>
@@ -944,14 +930,6 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
               ))}
             </span>
           </div>
-          <p className="text-muted mb-0" style={{fontSize: '11px'}}>
-            ✅ Auto Prepare Next: Active • {lastAutoSaveTime ? `Last auto-save: ${new Date(lastAutoSaveTime).toLocaleTimeString()}` : 'No auto-save yet this session'}
-          </p>
-          {lastManualSaveTime && (
-            <p className="text-muted mb-0" style={{fontSize: '11px'}}>
-              💾 Last manual save: {new Date(lastManualSaveTime).toLocaleTimeString()}
-            </p>
-          )}
         </div>
         
         <div className="header-actions">
