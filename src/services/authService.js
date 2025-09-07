@@ -1,15 +1,20 @@
-// Prefer explicit env; otherwise, if running CRA on :3000, point to :5000 locally
-const inferLocalApi = () => {
+// Use explicit env if provided; otherwise default to deployed backend URL in production
+// and localhost mapping in development.
+const resolveApiBaseUrl = () => {
+  const envUrl = process.env.REACT_APP_API_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) return envUrl;
   try {
     const { origin } = window.location;
+    // If running locally on CRA dev server, map to backend on :5000
     if (origin.includes(':3000')) return origin.replace(':3000', ':5000');
-    return origin;
+    // In hosted environments (e.g., Vercel/Netlify), use the deployed backend URL
+    return 'https://sunny-bd.onrender.com';
   } catch {
     return 'https://sunny-bd.onrender.com';
   }
 };
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || inferLocalApi();
+const API_BASE_URL = resolveApiBaseUrl();
 
 async function safeJson(res) {
   const ct = res.headers.get('content-type') || '';
@@ -19,7 +24,7 @@ async function safeJson(res) {
 }
 
 const AuthService = {
-  async seedDefault(name = 'Vamshi', password = 'Vamshi.c2002', passkey = '2002') {
+  async seedDefault(name = 'Vamshi', password = 'Vamshi.c2002', passkey = '2003') {
     const res = await fetch(`${API_BASE_URL}/auth/seed-default`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, password, passkey })
