@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { createEnterKeyHandler } from '../../utils/keyboardNavigation';
 import AddRecipeButton from '../AddRecipeButton';
 import EditDeleteButton from '../EditDeleteButton';
 import NewRecipeColumn from '../newrecpiecoloum';
@@ -28,6 +29,8 @@ const DynamicBlock = ({
 
   // Order quantities for each recipe
   const [orderQuantities, setOrderQuantities] = useState({});
+  const blockRef = useRef(null);
+  const handleEnterKey = useMemo(() => createEnterKeyHandler(() => blockRef.current), [categoryId]);
 
   // Load recipes from MongoDB on component mount
   useEffect(() => {
@@ -510,7 +513,7 @@ const DynamicBlock = ({
   }
 
   return (
-    <div className="block-container">
+    <div className="block-container" ref={blockRef}>
       <h2>{categoryName} Block</h2>
       
       {/* Action Buttons */}
@@ -585,6 +588,8 @@ const DynamicBlock = ({
                               type="number"
                           value={orderQuantities[recipe.id] ?? 0}
                           onChange={(e) => handleOrderQuantityChange(recipe.id, e.target.value)}
+                              onKeyDown={handleEnterKey}
+                              className="order-qty-input"
                               placeholder="0"
                           style={{ width: '60px' }}
                             />
