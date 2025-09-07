@@ -83,6 +83,10 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
 
   const handleValueChange = async (id, field, value) => {
     try {
+      // Prevent edits to restricted fields when not authenticated
+      if (!isAuthenticated && field !== 'received' && field !== 'received2') {
+        return;
+      }
       // First update local state for immediate UI feedback
       const newInventory = inventory.map(item => {
         if (item.id === id) {
@@ -464,6 +468,57 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
         if (nextInput) {
           nextInput.focus();
           nextInput.select();
+        }
+      }
+    }
+  };
+
+  // Move focus to next Opening Stock input on Enter (Excel-like navigation)
+  const handleOpeningEnter = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const inputs = Array.from(document.querySelectorAll('input.openingStock'));
+      const current = event.currentTarget;
+      const index = inputs.indexOf(current);
+      if (index !== -1) {
+        const nextInput = inputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select && nextInput.select();
+        }
+      }
+    }
+  };
+
+  // Move focus to next Consumed input on Enter (Excel-like navigation)
+  const handleConsumedEnter = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const inputs = Array.from(document.querySelectorAll('input.consumed'));
+      const current = event.currentTarget;
+      const index = inputs.indexOf(current);
+      if (index !== -1) {
+        const nextInput = inputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select && nextInput.select();
+        }
+      }
+    }
+  };
+
+  // Move focus to next Consumed2 input on Enter (Excel-like navigation)
+  const handleConsumed2Enter = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const inputs = Array.from(document.querySelectorAll('input.consumed2'));
+      const current = event.currentTarget;
+      const index = inputs.indexOf(current);
+      if (index !== -1) {
+        const nextInput = inputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select && nextInput.select();
         }
       }
     }
@@ -1256,7 +1311,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                       <input
                         type="number"
                         inputMode="decimal"
-                        className="form-control form-control-sm inventory-input"
+                        className="form-control form-control-sm inventory-input openingStock"
                         value={parseFloat(item.openingStock) || 0}
 
                         onChange={e => {
@@ -1264,8 +1319,9 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                           console.log('Opening Stock changed:', value);
                           handleValueChange(item.id, 'openingStock', value);
                         }}
+                        onKeyDown={handleOpeningEnter}
                         onWheel={e => e.currentTarget.blur()}
-                        readOnly={false}
+                        readOnly={!isAuthenticated}
                         disabled={false}
                         style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
@@ -1306,15 +1362,16 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input"
+                      className="form-control form-control-sm inventory-input consumed"
                       value={parseFloat(item.consumed) || 0}
                       onChange={e => {
                         const value = parseFloat(e.target.value) || 0;
                         console.log('Consumed changed:', value);
                         handleValueChange(item.id, 'consumed', value);
                       }}
+                      onKeyDown={handleConsumedEnter}
                       onWheel={e => e.currentTarget.blur()}
-                      readOnly={false}
+                      readOnly={!isAuthenticated}
                       disabled={false}
                       style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
@@ -1375,11 +1432,12 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input"
+                      className="form-control form-control-sm inventory-input consumed2"
                       value={parseFloat(item.consumed2) || 0}
                       onChange={e => handleValueChange(item.id, 'consumed2', parseFloat(e.target.value) || 0)}
+                      onKeyDown={handleConsumed2Enter}
                       onWheel={e => e.currentTarget.blur()}
-                      readOnly={false}
+                      readOnly={!isAuthenticated}
                       disabled={false}
                       style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
