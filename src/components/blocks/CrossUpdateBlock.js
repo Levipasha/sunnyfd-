@@ -39,8 +39,8 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
         // Initialize orderQuantities with default values for each recipe
         const initialOrderQuantities = {};
         recipes.forEach(recipe => {
-          // Set default order quantity to 1 for each recipe so ingredient values are visible
-          initialOrderQuantities[recipe.id] = 1;
+          // Set default order quantity to 0 so it looks zero by default
+          initialOrderQuantities[recipe.id] = 0;
         });
         setOrderQuantities(initialOrderQuantities);
         
@@ -81,7 +81,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
       setOrderQuantities(prev => {
         const newOrderQuantities = {};
         recipes.forEach(recipe => {
-          newOrderQuantities[recipe.id] = prev[recipe.id] || 1;
+          newOrderQuantities[recipe.id] = prev[recipe.id] || 0;
         });
         console.log('🔄 Updated order quantities:', newOrderQuantities);
         return newOrderQuantities;
@@ -115,7 +115,7 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
         console.log(`📝 Recipes in ${subCategory}:`, recipes);
         
         blockDataWithQuantities[subCategory] = recipes.map(recipe => {
-          const orderQty = orderQuantities[recipe.id] || 1;
+          const orderQty = orderQuantities[recipe.id] || 0;
           console.log(`📝 Recipe ${recipe.description || recipe.name}: orderQty = ${orderQty}`);
           
           return {
@@ -383,9 +383,9 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
         },
         items: [{
           name: newRow.description || newRow.name,
-          order: parseFloat(newRow.order) || 1,
+          order: parseFloat(newRow.order) || 0,
           per: parseFloat(newRow.per) || 1,
-          totalQty: parseFloat(newRow.order) || 1,
+          totalQty: parseFloat(newRow.order) || 0,
           ingredientValues: newRow.ingredients ? 
             (Array.isArray(newRow.ingredients) ? 
               newRow.ingredients.reduce((acc, ing) => {
@@ -396,8 +396,8 @@ const CrossUpdateBlock = ({ inventory, setInventory, isAuthenticated }) => {
             ) : {}
         }],
         totals: {
-          orderTotal: parseFloat(newRow.order) || 1,
-          totalQtyTotal: parseFloat(newRow.order) || 1,
+          orderTotal: parseFloat(newRow.order) || 0,
+          totalQtyTotal: parseFloat(newRow.order) || 0,
           ingredientTotals: newRow.ingredients ? 
             (Array.isArray(newRow.ingredients) ? 
               newRow.ingredients.reduce((acc, ing) => {
