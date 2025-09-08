@@ -5,7 +5,7 @@ import {
   addInventoryItem, 
   deleteInventoryItem
 } from '../services/inventoryService';
-import { initializeDailyRollover } from '../utils/inventoryConsumption';
+import { initializeDailyRollover, getCurrentCycleDate } from '../utils/inventoryConsumption';
 import InventoryRecordService from '../services/inventoryRecordService';
 import './Inventory.css';
 import './InventoryMobile.css';
@@ -38,10 +38,8 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Save records state
-  const [savingToRecords, setSavingToRecords] = useState(false);
+  // Save records state (auto-save only)
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState(null);
-  const [lastManualSaveTime, setLastManualSaveTime] = useState(null);
 
 
   // Countdown to next auto-save at midnight (local time)
@@ -83,10 +81,6 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
 
   const handleValueChange = async (id, field, value) => {
     try {
-      // Prevent edits to restricted fields when not authenticated
-      if (!isAuthenticated && field !== 'received' && field !== 'received2') {
-        return;
-      }
       // First update local state for immediate UI feedback
       const newInventory = inventory.map(item => {
         if (item.id === id) {
@@ -472,57 +466,6 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       }
     }
   };
-
-  // Move focus to next Opening Stock input on Enter (Excel-like navigation)
-  const handleOpeningEnter = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const inputs = Array.from(document.querySelectorAll('input.openingStock'));
-      const current = event.currentTarget;
-      const index = inputs.indexOf(current);
-      if (index !== -1) {
-        const nextInput = inputs[index + 1];
-        if (nextInput) {
-          nextInput.focus();
-          nextInput.select && nextInput.select();
-        }
-      }
-    }
-  };
-
-  // Move focus to next Consumed input on Enter (Excel-like navigation)
-  const handleConsumedEnter = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const inputs = Array.from(document.querySelectorAll('input.consumed'));
-      const current = event.currentTarget;
-      const index = inputs.indexOf(current);
-      if (index !== -1) {
-        const nextInput = inputs[index + 1];
-        if (nextInput) {
-          nextInput.focus();
-          nextInput.select && nextInput.select();
-        }
-      }
-    }
-  };
-
-  // Move focus to next Consumed2 input on Enter (Excel-like navigation)
-  const handleConsumed2Enter = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const inputs = Array.from(document.querySelectorAll('input.consumed2'));
-      const current = event.currentTarget;
-      const index = inputs.indexOf(current);
-      if (index !== -1) {
-        const nextInput = inputs[index + 1];
-        if (nextInput) {
-          nextInput.focus();
-          nextInput.select && nextInput.select();
-        }
-      }
-    }
-  };
   // Print entire inventory in an Excel-like table
   const handlePrintInventory = () => {
     try {
@@ -777,174 +720,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
     }
   };
 
-  // Function to save current inventory to records
-  const handleSaveToRecords = async () => {
-    try {
-      setSavingToRecords(true);
-      
-      // Get today's date - ensure proper date handling
-      const today = new Date();
-      // Create a new date object with local timezone to avoid timezone issues
-      const todayLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0, 0);
-      console.log(`🔍 Saving inventory records for date: ${todayLocal.toISOString()}`);
-      console.log(`🔍 Local date: ${todayLocal.toLocaleDateString()}`);
-      
-      // Create records for each inventory item with EXACT values from inventory table
-      const recordsToCreate = inventory.map((item, index) => {
-        // Get EXACT values as they appear in the inventory table - NO CALCULATIONS!
-        const openingStock = parseFloat(item.openingStock) || 0;
-        const received = parseFloat(item.received) || 0;
-        const consumed = parseFloat(item.consumed) || 0;
-        const total = parseFloat(item.total) || 0;        // Use ACTUAL total from inventory
-        const received2 = parseFloat(item.received2) || 0;
-        const consumed2 = parseFloat(item.consumed2) || 0;
-        const total2 = parseFloat(item.total2) || 0;      // Use ACTUAL total2 from inventory
-        
-        console.log(`Creating record for ${item.name}:`, {
-          openingStock, received, consumed, total, received2, consumed2, total2,
-          unit: item.unit || 'kg'
-        });
-        
-        // Only send the basic fields that the backend model expects
-        return {
-          date: todayLocal.toISOString().split('T')[0], // Send as YYYY-MM-DD string
-          itemName: item.name,
-          openingStock: openingStock,
-          received: received,
-          consumed: consumed,
-          total: total,        // ACTUAL total from inventory
-          received2: received2,
-          consumed2: consumed2,
-          total2: total2,      // ACTUAL total2 from inventory
-          unit: item.unit || 'kg'
-        };
-      });
-      
-      console.log(`Total inventory items: ${inventory.length}`);
-      console.log(`Records to create: ${recordsToCreate.length}`);
-      console.log('Sample record:', recordsToCreate[0]);
-      
-      // Show summary of what will be saved
-      const summary = recordsToCreate.reduce((acc, record) => {
-        acc.totalOpeningStock += record.openingStock;
-        acc.totalReceived += record.received + record.received2;
-        acc.totalConsumed += record.consumed + record.consumed2;
-        return acc;
-      }, { totalOpeningStock: 0, totalReceived: 0, totalConsumed: 0 });
-      
-      console.log('Summary of values to save:', summary);
-      
-      // Check for duplicate item names
-      const itemNames = inventory.map(item => item.name);
-      const uniqueNames = [...new Set(itemNames)];
-      const duplicateNames = itemNames.filter((name, index) => itemNames.indexOf(name) !== index);
-      
-      console.log(`Unique item names: ${uniqueNames.length}`);
-      if (duplicateNames.length > 0) {
-        console.log('Duplicate item names found:', [...new Set(duplicateNames)]);
-      }
-      
-      // Check if there are any actual values to save
-      const hasValues = recordsToCreate.some(record => 
-        record.openingStock > 0 || record.received > 0 || record.consumed > 0 || 
-        record.received2 > 0 || record.consumed2 > 0
-      );
-      
-      if (!hasValues) {
-        alert('❌ No inventory values to save. Please make changes to your inventory first.');
-        return;
-      }
-      
-      // Check if records already exist for today
-      const existingRecords = await InventoryRecordService.getRecords({
-        startDate: todayLocal.toISOString(),
-        endDate: todayLocal.toISOString()
-      });
-      
-      if (existingRecords.data && existingRecords.data.length > 0) {
-        const shouldOverwrite = window.confirm(`Records for ${todayLocal.toLocaleDateString()} already exist. Do you want to overwrite them? This will delete existing records and save new ones.`);
-        if (shouldOverwrite) {
-          // Delete existing records for today
-          for (const existingRecord of existingRecords.data) {
-            try {
-              await InventoryRecordService.deleteRecord(existingRecord._id);
-              console.log(`Deleted existing record for ${existingRecord.itemName}`);
-            } catch (error) {
-              console.error(`Failed to delete existing record for ${existingRecord.itemName}:`, error);
-            }
-          }
-        } else {
-          alert('Save cancelled. Records already exist for today.');
-          return;
-        }
-      }
-      
-      // Save each record
-      let savedCount = 0;
-      let errorCount = 0;
-      const errorDetails = [];
-      for (const record of recordsToCreate) {
-        try {
-          console.log(`Saving record for ${record.itemName}...`);
-          console.log('Record data being sent:', JSON.stringify(record, null, 2));
-          console.log('Record data types:', {
-            date: typeof record.date,
-            itemName: typeof record.itemName,
-            openingStock: typeof record.openingStock,
-            received: typeof record.received,
-            consumed: typeof record.consumed,
-            total: typeof record.total,
-            received2: typeof record.received2,
-            consumed2: typeof record.consumed2,
-            total2: typeof record.total2,
-            unit: typeof record.unit
-          });
-          await InventoryRecordService.createRecord(record);
-          savedCount++;
-          console.log(`✅ Successfully saved record for ${record.itemName}`);
-        } catch (error) {
-          errorCount++;
-          errorDetails.push({ record, error: error.message });
-          console.error(`❌ Failed to save record for ${record.itemName}:`, error);
-        }
-      }
-      
-      console.log(`Save process completed: ${savedCount} saved, ${errorCount} failed`);
-      
-      // Show detailed error information if there are failures
-      if (errorCount > 0) {
-        console.error('Failed records details:', errorDetails);
-        
-        // Check for common validation errors
-        const validationErrors = errorDetails.filter(error => 
-          error.error.includes('validation') || 
-          error.error.includes('enum') ||
-          error.error.includes('required')
-        );
-        
-        if (validationErrors.length > 0) {
-          console.error('Validation errors found:', validationErrors);
-          alert(`⚠️ ${errorCount} records failed to save due to validation errors.\n\nCheck the browser console for detailed error information.\n\nCommon issues:\n- Missing required fields\n- Data type mismatches\n- Invalid numeric values`);
-        } else {
-          alert(`⚠️ ${errorCount} records failed to save.\n\nCheck the browser console for detailed error information.`);
-        }
-      }
-      
-      // Show success message
-      if (savedCount > 0) {
-        setLastManualSaveTime(new Date());
-        alert(`✅ Successfully saved ${savedCount} inventory items to records for ${todayLocal.toLocaleDateString()}\n\nTotal inventory items: ${inventory.length}\nSuccessfully saved: ${savedCount}\nFailed to save: ${errorCount}\nUnique item names: ${uniqueNames.length}\nDuplicate names: ${duplicateNames.length > 0 ? duplicateNames.length : 'None'}`);
-      } else {
-        alert('❌ Failed to save any records. Please check the console for errors.');
-      }
-      
-    } catch (error) {
-      console.error('Failed to save inventory to records:', error);
-      alert('❌ Error saving to records: ' + error.message);
-    } finally {
-      setSavingToRecords(false);
-    }
-  };
+  // Manual save to records removed; records are saved automatically at midnight
 
   // Manual Prepare Next Day flow removed; rollover handled automatically at 12 AM
 
@@ -973,6 +749,20 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       
       <div className="d-flex justify-content-between align-items-center mb-1 inventory-header">
         <div>
+          <h2>Inventory Management</h2>
+          <p className="text-muted mb-0">
+            <strong>Current Cycle:</strong> {getCurrentCycleDate()} (12 AM to 12 AM)
+          </p>
+          <p className="permission-indicator mb-0">
+            {isAuthenticated ? 
+              "🔓 Logged In: Can edit Opening Stock, Received, and Consumed" : 
+              "🔒 Logged Out: Can only edit Received fields"
+            }
+          </p>
+
+            <p className="text-muted mb-0" style={{fontSize: '11px'}}>
+            💾 Records are automatically saved at 12 AM daily (end of each cycle)
+          </p>
           <div className="digital-timer">
             <span className="label">⏳ Time left to prepare:</span>
             <span className="flip-timer" aria-label={`Time left ${nextSaveCountdown}`}>
@@ -985,6 +775,10 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
               ))}
             </span>
           </div>
+          <p className="text-muted mb-0" style={{fontSize: '11px'}}>
+            ✅ Auto Prepare Next: Active • {lastAutoSaveTime ? `Last auto-save: ${new Date(lastAutoSaveTime).toLocaleTimeString()}` : 'No auto-save yet this session'}
+          </p>
+          {/* Manual save timestamp removed */}
         </div>
         
         <div className="header-actions">
@@ -1311,7 +1105,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                       <input
                         type="number"
                         inputMode="decimal"
-                        className="form-control form-control-sm inventory-input openingStock"
+                        className="form-control form-control-sm inventory-input"
                         value={parseFloat(item.openingStock) || 0}
 
                         onChange={e => {
@@ -1319,9 +1113,8 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                           console.log('Opening Stock changed:', value);
                           handleValueChange(item.id, 'openingStock', value);
                         }}
-                        onKeyDown={handleOpeningEnter}
                         onWheel={e => e.currentTarget.blur()}
-                        readOnly={!isAuthenticated}
+                        readOnly={false}
                         disabled={false}
                         style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
@@ -1362,16 +1155,15 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input consumed"
+                      className="form-control form-control-sm inventory-input"
                       value={parseFloat(item.consumed) || 0}
                       onChange={e => {
                         const value = parseFloat(e.target.value) || 0;
                         console.log('Consumed changed:', value);
                         handleValueChange(item.id, 'consumed', value);
                       }}
-                      onKeyDown={handleConsumedEnter}
                       onWheel={e => e.currentTarget.blur()}
-                      readOnly={!isAuthenticated}
+                      readOnly={false}
                       disabled={false}
                       style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
@@ -1432,12 +1224,11 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
                     <input
                       type="number"
                       inputMode="decimal"
-                      className="form-control form-control-sm inventory-input consumed2"
+                      className="form-control form-control-sm inventory-input"
                       value={parseFloat(item.consumed2) || 0}
                       onChange={e => handleValueChange(item.id, 'consumed2', parseFloat(e.target.value) || 0)}
-                      onKeyDown={handleConsumed2Enter}
                       onWheel={e => e.currentTarget.blur()}
-                      readOnly={!isAuthenticated}
+                      readOnly={false}
                       disabled={false}
                       style={{backgroundColor: 'white !important', border: '1px solid #dee2e6 !important', pointerEvents: 'auto !important', cursor: 'text !important'}}
 
@@ -1516,51 +1307,7 @@ const Inventory = ({ inventory, setInventory, isAuthenticated }) => {
       
 
       
-      {/* Save Records Section - For Testing Today's Records */}
-      <div className="card mb-3 save-records-card">
-        <div className="card-body">
-          <div className="row align-items-center">
-            <div className="col-md-8">
-              <h5 className="card-title mb-1">💾 Save Today's Inventory Records</h5>
-              <p className="card-text text-muted mb-0">
-                Save current inventory state to daily records for {new Date().toLocaleDateString()}. 
-                This will create a snapshot of today's inventory for future reference.
-              </p>
-            </div>
-            <div className="col-md-4 text-end">
-              <button
-                className="btn btn-success btn-lg"
-                onClick={handleSaveToRecords}
-                disabled={savingToRecords}
-                style={{
-                  padding: '12px 24px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseOver={(e) => {
-                  if (!savingToRecords) {
-                    e.target.style.backgroundColor = '#218838';
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(40, 167, 69, 0.4)';
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (!savingToRecords) {
-                    e.target.style.backgroundColor = '#28a745';
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 2px 4px rgba(40, 167, 69, 0.1)';
-                  }
-                }}
-                title={savingToRecords ? 'Saving records...' : 'Save current inventory to daily records'}
-              >
-                <i className={`fas ${savingToRecords ? 'fa-spinner fa-spin' : 'fa-save'}`} style={{ marginRight: '8px' }}></i>
-                {savingToRecords ? 'Saving...' : 'Save Records'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Manual Save Records Section removed */}
 
       {/* Edit Units Panel - Consistent with Edit Recipe styling */}
       {editPanelOpen && (
