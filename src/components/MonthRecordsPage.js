@@ -13,6 +13,16 @@ const MonthRecordsPage = () => {
   const [error, setError] = useState('');
   const resultsRef = useRef(null);
 
+  // Helper: add days to YYYY-MM-DD string and return YYYY-MM-DD
+  const addDaysToDateString = (dateString, daysToAdd) => {
+    const base = new Date(dateString);
+    base.setDate(base.getDate() + daysToAdd);
+    const yyyy = base.getFullYear();
+    const mm = String(base.getMonth() + 1).padStart(2, '0');
+    const dd = String(base.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const fetchData = async () => {
     if (!startDate || !endDate) {
       setError('Please select both start and end dates');
@@ -28,22 +38,27 @@ const MonthRecordsPage = () => {
     setError('');
 
     try {
-      console.log('🔍 Fetching records for date range:', startDate, 'to', endDate);
+      console.log('🔍 Fetching records for date range (shifted +1):', startDate, 'to', endDate);
       // If single day selected, use day view to avoid inclusive-range edge cases
       const isSingleDay = startDate === endDate;
       let response;
       if (isSingleDay) {
+        const shiftedDate = addDaysToDateString(startDate, 1);
         response = await InventoryRecordService.getRecords({
           view: 'day',
-          date: startDate,
+          date: shiftedDate,
           limit: 10000
         });
       } else {
         // Normalize to local timezone at midday to avoid TZ edge cases and ensure inclusivity
         const start = new Date(startDate);
         const end = new Date(endDate);
-        const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 12, 0, 0, 0).toISOString();
-        const endLocal = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 12, 0, 0, 0).toISOString();
+        const startShifted = new Date(start);
+        const endShifted = new Date(end);
+        startShifted.setDate(startShifted.getDate() + 1);
+        endShifted.setDate(endShifted.getDate() + 1);
+        const startLocal = new Date(startShifted.getFullYear(), startShifted.getMonth(), startShifted.getDate(), 12, 0, 0, 0).toISOString();
+        const endLocal = new Date(endShifted.getFullYear(), endShifted.getMonth(), endShifted.getDate(), 12, 0, 0, 0).toISOString();
 
         response = await InventoryRecordService.getRecords({
           startDate: startLocal,
@@ -222,7 +237,11 @@ const MonthRecordsPage = () => {
           <div className="results-section" ref={resultsRef}>
             <div className="results-header">
               <h3>
-                Records from {new Date(startDate).toLocaleDateString()} to {new Date(endDate).toLocaleDateString()}
+                {startDate === endDate ? (
+                  <>Records for {new Date(startDate).toLocaleDateString()}</>
+                ) : (
+                  <>Records from {new Date(startDate).toLocaleDateString()} to {new Date(addDaysToDateString(endDate, -1)).toLocaleDateString()}</>
+                )}
               </h3>
               <span className="record-count">{records.length} records found</span>
               <button className="print-btn" onClick={handlePrint} title="Print monthly records">
