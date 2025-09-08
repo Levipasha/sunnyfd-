@@ -25,6 +25,16 @@ const RecordsTable = ({ view, data }) => {
     return parseFloat(num).toFixed(2);
   };
 
+  const addDaysToDateString = (dateString, daysToAdd) => {
+    try {
+      const base = new Date(dateString);
+      base.setDate(base.getDate() + daysToAdd);
+      return base.toISOString().split('T')[0];
+    } catch (e) {
+      return dateString;
+    }
+  };
+
 
 
   const getDisplayUnit = (record) => {
@@ -116,9 +126,12 @@ const RecordsTable = ({ view, data }) => {
             <thead>
               <tr>
                 <th className="item-column">Item Name</th>
-                {uniqueDates.map(d => (
-                  <th key={d} className="number-column date-col">{formatDate(d)}</th>
-                ))}
+                {uniqueDates.map(d => {
+                  const labelDate = addDaysToDateString(d, -1);
+                  return (
+                    <th key={d} className="number-column date-col">{formatDate(labelDate)}</th>
+                  );
+                })}
                 <th className="number-column">Total Received</th>
                 <th className="number-column">Total Consumed</th>
               </tr>
