@@ -11,6 +11,16 @@ const DayRecordsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Helper: add days to YYYY-MM-DD string and return YYYY-MM-DD
+  const addDaysToDateString = (dateString, daysToAdd) => {
+    const base = new Date(dateString);
+    base.setDate(base.getDate() + daysToAdd);
+    const yyyy = base.getFullYear();
+    const mm = String(base.getMonth() + 1).padStart(2, '0');
+    const dd = String(base.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const fetchData = async () => {
     if (!date) {
       setError('Please select a date');
@@ -21,12 +31,14 @@ const DayRecordsPage = () => {
     setError('');
 
     try {
-      console.log('🔍 Fetching records for date (day view):', date);
+      // Shift to next day for fetching while keeping UI date unchanged
+      const shiftedDate = addDaysToDateString(date, 1);
+      console.log('🔍 Fetching records for date (day view, shifted +1):', shiftedDate, '(selected:', date, ')');
 
       // New API usage: view=day with exact date string (YYYY-MM-DD)
       const response = await InventoryRecordService.getRecords({
         view: 'day',
-        date,
+        date: shiftedDate,
         limit: 10000
       });
       
