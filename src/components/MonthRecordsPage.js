@@ -29,12 +29,28 @@ const MonthRecordsPage = () => {
 
     try {
       console.log('🔍 Fetching records for date range:', startDate, 'to', endDate);
-      
-      const response = await InventoryRecordService.getRecords({
-        startDate: startDate,
-        endDate: endDate,
-        limit: 10000
-      });
+      // If single day selected, use day view to avoid inclusive-range edge cases
+      const isSingleDay = startDate === endDate;
+      let response;
+      if (isSingleDay) {
+        response = await InventoryRecordService.getRecords({
+          view: 'day',
+          date: startDate,
+          limit: 10000
+        });
+      } else {
+        // Normalize to local timezone at midday to avoid TZ edge cases and ensure inclusivity
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 12, 0, 0, 0).toISOString();
+        const endLocal = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 12, 0, 0, 0).toISOString();
+
+        response = await InventoryRecordService.getRecords({
+          startDate: startLocal,
+          endDate: endLocal,
+          limit: 10000
+        });
+      }
       
       if (response.success) {
         setRecords(response.data || []);
